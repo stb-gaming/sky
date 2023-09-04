@@ -1,4 +1,4 @@
-// <script type="text/javascript" src="https://denki.co.uk/sky/message.js"></script>
+// <script type="text/javascript" src="https://denki.co.uk/sky/apiHandler.js"></script>
 // Created by tumble for denki, denki can hold rights to this and even remove this comment
 
 window.addEventListener('message', (event) => {
