@@ -75,7 +75,7 @@ function onBindCheck() {
 
 function onBindFail() {
 	editPrompt(`Failed to bind ${binding}`);
-	setTimeout(() => collectBinding(binding), 100);
+	setTimeout(() => collectBinding(binding), 1000);
 
 }
 
@@ -83,7 +83,7 @@ function onBindSuccess() {
 	bind(binding, bindCheck);
 	editPrompt(`Successfully bound ${binding} to ${bindCheck.device} - ${bindCheck.button}`);
 
-	setTimeout(() => collectBinding(buttons[buttons.indexOf(binding) + 1]), 100);
+	setTimeout(() => collectBinding(buttons[buttons.indexOf(binding) + 1]), 1000);
 
 
 }
