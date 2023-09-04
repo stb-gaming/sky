@@ -17,3 +17,6 @@ portalFrame.addEventListener("load", () => {
 	console.log(urlParams.toString());
 	setUrlBar(location.pathname + '?' + urlParams.toString());
 });
+
+
+setFrameUrl(urlParams.get("url"));
