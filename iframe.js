@@ -13,10 +13,9 @@ function setFrameUrl(url) {
 }
 
 portalFrame.addEventListener("load", () => {
-	urlParams.set('url', portalWindow.location.href);
 	console.log(urlParams.toString());
 	setUrlBar(location.pathname + '?' + urlParams.toString());
 });
 
 
-setFrameUrl(urlParams.get("url"));
+if (urlParams.has("url")) setFrameUrl(urlParams.get("url"));
