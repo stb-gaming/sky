@@ -138,6 +138,9 @@ function createPopup(button) {
 	prompt.id = 'bind-prompt';
 	prompt.textContent = `Press a key to bind ${button}...`;
 
+	const touch = document.createElement('p');
+	touch.textContent = 'Tap here to start touch controls';
+
 	const info = document.createElement('p');
 	info.textContent = 'Supports: Keyboards, Controllers (TV Remotes are some combination of controller or keybaord)';
 	const notice = document.createElement('em');
@@ -145,10 +148,13 @@ function createPopup(button) {
 
 	popup.appendChild(heading);
 	popup.appendChild(prompt);
+	popup.appendChild(touch);
 	popup.appendChild(info);
 	popup.appendChild(notice);
 
 	document.body.appendChild(popup);
+
+	popup.addEventListener("touchstart", touchstart);
 }
 
 function editPrompt(newprompt) {
@@ -163,6 +169,8 @@ function deletePopup() {
 	if (popup) {
 		popup.remove();
 	}
+
+	popup.removeEventListener("touchstart", touchstart);
 }
 
 
@@ -255,6 +263,16 @@ function connectToGame() {
 		}
 	});
 }
+
+function touchstart(e) {
+	e.target.removeEventListener("touchstart", touchstart);
+	deletePopup();
+	inputCallbacks.length = 0;
+	document.body.appendChild(createSkyRemoteContainer());
+	setupMobileControls();
+
+}
+
 
 async function init() {
 	await bindAll();

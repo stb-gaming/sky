@@ -1,16 +1,28 @@
+html,
+body {
+	margin: 0;
+	padding: 0;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+}
+
 body {
 	user-select: none;
-	/* Prevent text selection */
+	display: flex;
+	flex-direction: column;
 }
 
 iframe {
-	position: absolute;
+	flex: 1;
+	/* grid-area: game; */
+	/* position: absolute;
 	top: 0;
-	left: 0;
+	left: 0; */
 	width: 100%;
 	height: 100%;
 	border: none;
-	pointer-events: none;
+	/* pointer-events: none; */
 }
 
 
@@ -30,4 +42,254 @@ iframe {
 	margin-inline: auto;
 	/* height: auto; */
 	height: fit-content;
+}
+
+
+#sky-remote-container {
+	flex-basis: 336px;
+	flex: 0 1 336px;
+
+}
+
+#sky-remote {
+	position: relative;
+	bottom: 0;
+	background-color: gray;
+	height: 100%;
+	/* width: 100vw; */
+	touch-action: none;
+	user-select: none;
+}
+
+#sky-remote-dpad {
+	position: absolute;
+	bottom: 70px;
+	left: 1px;
+	width: 184px;
+	height: 184px;
+}
+
+#sky-remote-dpad-left,
+#sky-remote-dpad-right,
+#sky-remote-dpad-up,
+#sky-remote-dpad-down {
+	-webkit-box-shadow: 0px 0px 0 3px rgba(0, 0, 0, 0.1), 0px 5px 5px 0 rgba(0, 0, 0, 0.2),
+		0px 3px 5px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1), 0 5px 5px rgba(0, 0, 0, 0.2), 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+#sky-remote-dpad:before {
+	content: "";
+	display: block;
+	width: 48px;
+	height: 48px;
+	position: absolute;
+	left: 68px;
+	top: 68px;
+}
+
+#sky-remote-dpad:after {
+	content: "";
+	display: block;
+	position: absolute;
+	pointer-events: none;
+	width: 184px;
+	height: 184px;
+	z-index: 1;
+	background-color: turquoise;
+	border-radius: 50%;
+	background-size: 165px;
+	background-position: 10px;
+}
+
+#sky-remote-dpad-left {
+	position: absolute;
+	left: 20px;
+	top: 68px;
+	width: 48px;
+	height: 48px;
+	border-top-left-radius: 4px;
+	border-bottom-left-radius: 4px;
+}
+
+#sky-remote-dpad-right {
+	position: absolute;
+	left: 116px;
+	top: 68px;
+	width: 48px;
+	height: 48px;
+	border-top-right-radius: 4px;
+	border-bottom-right-radius: 4px;
+}
+
+#sky-remote-dpad-up {
+	position: absolute;
+	left: 68px;
+	top: 20px;
+	width: 48px;
+	height: 48px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+
+#sky-remote-dpad-down {
+	position: absolute;
+	left: 68px;
+	top: 116px;
+	width: 48px;
+	height: 48px;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+}
+
+#sky-remote-select {
+	position: absolute;
+	right: 10px;
+	bottom: 100px;
+	background-color: cyan;
+	border-radius: 50%;
+	height: 110px;
+	width: 110px;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+	color: white;
+	font-weight: bold;
+	font-family: sans-serif;
+}
+
+#sky-remote-red,
+#sky-remote-green,
+#sky-remote-yellow,
+#sky-remote-blue,
+#sky-remote-backup,
+#sky-remote-help,
+#sky-remote-log {
+	position: absolute;
+	border-radius: 50%;
+	height: 60px;
+	width: 60px;
+}
+
+#sky-remote-red {
+	background-color: red;
+	right: 130px;
+	bottom: 60px;
+}
+
+#sky-remote-backup {
+	background-color: black;
+	margin: auto;
+	left: 0;
+	right: 0;
+	top: 40px;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+	color: white;
+	font-weight: bold;
+	font-family: sans-serif;
+	width: 110px;
+	height: 40px;
+	border-bottom-left-radius: 70%;
+	border-bottom-right-radius: 70%;
+	border-top-left-radius: 30%;
+	border-top-right-radius: 30%;
+}
+
+#sky-remote-help {
+	background-color: black;
+	margin: auto;
+	left: 0;
+	right: 0;
+	top: 5px;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+	color: white;
+	font-weight: bold;
+	font-family: sans-serif;
+	width: 80px;
+	height: 30px;
+}
+
+#sky-remote-log {
+	background-color: black;
+	margin: auto;
+	right: 10px;
+	top: 5px;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+	color: white;
+	font-weight: bold;
+	font-family: sans-serif;
+	width: 80px;
+	height: 35px;
+	text-align: center;
+	z-index: 3;
+}
+
+#sky-remote-green {
+	background-color: green;
+	right: 130px;
+	bottom: 139px;
+}
+
+#sky-remote-yellow {
+	background-color: yellow;
+	right: 86px;
+	bottom: 206px;
+}
+
+#sky-remote-blue {
+	background-color: blue;
+	right: 15px;
+	bottom: 226px;
+}
+
+#game-log-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100vw;
+	background-color: white;
+	font-family: monospace;
+	z-index: 2;
+
+	display: flex;
+	flex-direction: column-reverse;
+	justify-content: flex-start;
+	overflow-y: scroll;
+	display: none;
+}
+
+
+#game-log p {
+	display: block;
+	margin: 0;
+	border: solid 0.15em;
+	border-color: #ffffff;
+
+}
+
+#game-log .info {
+	color: blue
+}
+
+#game-log .warn {
+	color: #f2ab26;
+	background-color: #332b00;
+	border-color: #665500;
+}
+
+#game-log .error {
+	color: #f17678;
+	background-color: #290000;
+	border-color: #5c0000;
 }
