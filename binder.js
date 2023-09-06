@@ -1,5 +1,5 @@
 const devices = {},
-	bindings = {},
+	bindings = JSON.parse(localStorage.getItem("stb_bindings")) || {},
 	doublePress = 100,
 	inputCallbacks = [];
 let gamepadAnimationFrame = null,
@@ -73,6 +73,7 @@ function gamepadLoop() {
 		for (const aid in gamepad.axes) {
 			const axis = gamepad.axes[aid], lastAxis = lastGamepad.axes[aid];
 			if (lastAxis !== axis) {
+				//TODO collect multiple axis
 				collectInput(gamepad.id, "Axis" + aid, axis);
 			}
 		}
@@ -88,9 +89,9 @@ function startGamepadLoop() {
 }
 
 function gamepadConnection() {
-	console.log("New Gamepad");
+	console.debug("New Gamepad");
 	if (countGamepads() > 0) {
-		console.log("Started Gamepad loop");
+		console.debug("Started Gamepad loop");
 		startGamepadLoop();
 		window.removeEventListener("gamepadconnected", gamepadConnection);
 	}
@@ -98,7 +99,7 @@ function gamepadConnection() {
 
 function gamepadDisconnection() {
 	if (countGamepads() == 0) {
-		console.log("Stopped Gamepad loop");
+		console.debug("Stopped Gamepad loop");
 		cancelAnimationFrame(gamepadAnimationFrame);
 		window.addEventListener("gamepadconnected", gamepadConnection);
 		window.removeEventListener("gamepaddisconnected", gamepadDisconnection);
@@ -170,25 +171,20 @@ function sleep(ms) {
 
 
 async function bindInput(button) {
+	if (bindings[button]) return;
 	createPopup(button);
 	let bindingConfirmed = false;
 	if (!bindings.hasOwnProperty(button)) bindings[button] = {};
 	const btnBindings = bindings[button];
 
 	while (!bindingConfirmed) {
-		let input = await getInput(),
-
-			// use later for chords
-			state = devices[input.devices];
+		let input = await getInput();
 
 		editPrompt(`Press ${input.device} - ${input.action} again to confirm binding`);
 		let input2 = {};
 		while (Math.sign(input.value) !== Math.sign(input2.value)) {
 			input2 = await getInput();
 		}
-
-		// use kater for chords
-		let state2 = devices[input2.device];
 
 		if (input.device == input2.device && input.action == input2.action) {
 			if (!btnBindings.hasOwnProperty(input.device)) btnBindings[input.device] = {};
@@ -214,11 +210,88 @@ async function bindAll() {
 	for (const button of ["select", "backup", "up", "down", "left", "right", "red", "green", "yellow", "blue"]) {
 		await bindInput(button);
 	}
+	localStorage.setItem("stb_bindings", JSON.stringify(bindings));
+}
+
+function arraysSame(a, b) {
+	if (!Array.isArray(a) && !Array.isArray(b)) {
+		return a == b;
+	}
+	if (!Array.isArray(a) && Array.isArray(b)) {
+		return b.includes(a);
+	}
+	if (Array.isArray(a) && !Array.isArray(b)) {
+		return a.includes(b);
+	}
+
+	if (Array.isArray(a) && Array.isArray(b)) {
+		//TDOD
+		console.warn("coming soon");
+		return false;
+	}
+	return false;
+}
+
+function getButtonsFromInput(input) {
+	/*
+	INPUT:
+	device
+	action
+	value
+	times
+	*/
+	/*
+	BINDINGS:
+	(sky remote)=>(device) =>
+	actions
+	percise
+	times
+	values
+	*/
+	const boundButtons = [];
+	for (const skyButton in bindings) {
+		const btnBindings = bindings[skyButton];
+		if (!btnBindings.hasOwnProperty(input.device)) continue;
+		const binding = btnBindings[input.device];
+		console.debug({ skyButton, binding, input });
+		if (arraysSame(binding.actions, input.action) && binding.times == input.times) {
+			if (!input.value) {
+				boundButtons.push({ button: skyButton, value: !!input.value });
+			}
+			if (binding.precise) {
+				if (arraysSame(binding.values, input.value)) {
+					boundButtons.push({ button: skyButton, value: !!input.value });
+				}
+			} else {
+				if (arraysSame(binding.values.map(v => Math.sign(v)), Math.sign(input.value))) {
+					boundButtons.push({ button: skyButton, value: !!input.value });
+				}
+			}
+		}
+	}
+	return boundButtons;
+}
+
+function connectToGame() {
+	onInput(input => {
+		let buttons = getButtonsFromInput(input);
+		console.debug(buttons);
+		for (const button of buttons) {
+			if (button.value) {
+				console.debug("Holding", button.button);
+				SkyRemote.holdButton(button.button, portalWindow, true);
+			} else {
+				console.debug("Releasing", button.button);
+				SkyRemote.releaseButton(button.button, portalWindow, true);
+			}
+		}
+	});
 }
 
 async function init() {
 	await bindAll();
 	deletePopup();
+	await connectToGame();
 };
 
 init();
