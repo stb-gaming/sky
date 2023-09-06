@@ -6,6 +6,7 @@ let gamepadAnimationFrame = null,
 	lastGamepads = [],
 	lastInput = null;
 
+
 function getTime() {
 	return Number(new Date());
 }
@@ -189,11 +190,11 @@ async function bindInput(button) {
 		if (input.device == input2.device && input.action == input2.action) {
 			if (!btnBindings.hasOwnProperty(input.device)) btnBindings[input.device] = {};
 			const binding = btnBindings[input.device];
-			binding.actions = [input.action];
-			binding.values = [input.value];
+			binding.action = input.action;
+			binding.value = input.value;
 			binding.times = input.times;
 			binding.precise = input.value === input2.value;
-			editPrompt(`Successfully bound ${button} to ${input.device} - ${binding.actions}`);
+			editPrompt(`Successfully bound ${button} to ${input.device} - ${binding.action}`);
 
 			bindingConfirmed = true;
 			await sleep(1000);
@@ -213,57 +214,24 @@ async function bindAll() {
 	localStorage.setItem("stb_bindings", JSON.stringify(bindings));
 }
 
-function arraysSame(a, b) {
-	if (!Array.isArray(a) && !Array.isArray(b)) {
-		return a == b;
-	}
-	if (!Array.isArray(a) && Array.isArray(b)) {
-		return b.includes(a);
-	}
-	if (Array.isArray(a) && !Array.isArray(b)) {
-		return a.includes(b);
-	}
-
-	if (Array.isArray(a) && Array.isArray(b)) {
-		//TDOD
-		console.warn("coming soon");
-		return false;
-	}
-	return false;
-}
 
 function getButtonsFromInput(input) {
-	/*
-	INPUT:
-	device
-	action
-	value
-	times
-	*/
-	/*
-	BINDINGS:
-	(sky remote)=>(device) =>
-	actions
-	percise
-	times
-	values
-	*/
 	const boundButtons = [];
 	for (const skyButton in bindings) {
 		const btnBindings = bindings[skyButton];
 		if (!btnBindings.hasOwnProperty(input.device)) continue;
 		const binding = btnBindings[input.device];
 		console.debug({ skyButton, binding, input });
-		if (arraysSame(binding.actions, input.action) && binding.times == input.times) {
+		if ((binding.action || binding.actions[0]) === input.action && binding.times == input.times) {
 			if (!input.value) {
 				boundButtons.push({ button: skyButton, value: !!input.value });
 			}
 			if (binding.precise) {
-				if (arraysSame(binding.values, input.value)) {
+				if ((binding.value || binding.values[0]) === input.value) {
 					boundButtons.push({ button: skyButton, value: !!input.value });
 				}
 			} else {
-				if (arraysSame(binding.values.map(v => Math.sign(v)), Math.sign(input.value))) {
+				if ((Math.sign(binding.value) || binding.values.map(v => Math.sign(v))) === Math.sign(input.value)) {
 					boundButtons.push({ button: skyButton, value: !!input.value });
 				}
 			}
