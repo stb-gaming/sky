@@ -107,10 +107,10 @@ function setupMobileControls() {
 		}
 	].forEach(b => {
 		b.element.addEventListener("touchstart", () => {
-			SkyRemote.holdButton(b.button, portalWindow, true);
+			SkyRemote.holdButton(b.button);
 		});
 		b.element.addEventListener("touchend", () => {
-			SkyRemote.releaseButton(b.button, portalWindow, true);
+			SkyRemote.releaseButton(b.button);
 		});
 	});
 	let toggleLog = () => {
@@ -135,20 +135,20 @@ function setupMobileControls() {
 		if (Math.abs(y) < deadZone) y = 0;
 		console.log({ x, y });
 		if (Math.sign(x) < 0) {
-			SkyRemote.releaseButton("right", portalWindow, true);
-			SkyRemote.holdButton("left", portalWindow, true);
+			SkyRemote.releaseButton("right");
+			SkyRemote.holdButton("left");
 		}
 		if (Math.sign(x) > 0) {
-			SkyRemote.releaseButton("left", portalWindow, true);
-			SkyRemote.holdButton("right", portalWindow, true);
+			SkyRemote.releaseButton("left");
+			SkyRemote.holdButton("right");
 		}
 		if (Math.sign(y) < 0) {
-			SkyRemote.releaseButton("down", portalWindow, true);
-			SkyRemote.holdButton("up", portalWindow, true);
+			SkyRemote.releaseButton("down");
+			SkyRemote.holdButton("up");
 		}
 		if (Math.sign(y) > 0) {
-			SkyRemote.releaseButton("up", portalWindow, true);
-			SkyRemote.holdButton("down", portalWindow, true);
+			SkyRemote.releaseButton("up");
+			SkyRemote.holdButton("down");
 		}
 	}
 
@@ -156,9 +156,11 @@ function setupMobileControls() {
 	dpad.addEventListener("touchmove", touchEvent);
 	dpad.addEventListener("touchend", e => {
 		["up", "down", "left", "right"].forEach(d =>
-			SkyRemote.releaseButton(d, portalWindow, true));
+			SkyRemote.releaseButton(d));
 	});
 }
+
+
 
 window.getQueuedLogs = function () {
 	console.log(queuedLogs.map(l => l.classList.toString() + ": " + l.innerText).join(`

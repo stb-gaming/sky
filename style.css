@@ -7,24 +7,16 @@ body {
 	overflow: hidden;
 }
 
+* {
+
+	user-select: none;
+}
+
 body {
 	user-select: none;
 	display: flex;
 	flex-direction: column;
 }
-
-iframe {
-	flex: 1;
-	/* grid-area: game; */
-	/* position: absolute;
-	top: 0;
-	left: 0; */
-	width: 100%;
-	height: 100%;
-	border: none;
-	/* pointer-events: none; */
-}
-
 
 .bind-popup {
 	background-color: hsla(0, 0%, 83%, 0.9);
@@ -44,10 +36,32 @@ iframe {
 	height: fit-content;
 }
 
+div.emscripten,
+figure {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	translate: -50% -50%;
+	z-index: 2;
+}
+
+div.emscripten_border {
+	flex: 1;
+	width: 100%;
+	height: 100%;
+	border: none;
+	position: relative;
+	background-color: gray;
+	border: none;
+}
+
+canvas {
+	position: absolute;
+}
 
 #sky-remote-container {
 	flex-basis: 336px;
-	flex: 0 1 336px;
+	/* flex: 0 1 336px; */
 
 }
 
@@ -60,6 +74,7 @@ iframe {
 	touch-action: none;
 	user-select: none;
 }
+
 
 #sky-remote-dpad {
 	position: absolute;

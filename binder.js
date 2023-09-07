@@ -12,6 +12,10 @@ function getTime() {
 }
 
 
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function collectInput(device, action, value) {
 	let currentTime = getTime();
 	if (!devices.hasOwnProperty(device)) devices[device] = {};
@@ -36,6 +40,24 @@ function collectInput(device, action, value) {
 		callback(input);
 	}
 }
+
+
+function onInput(cb) {
+	return inputCallbacks.push(cb) - 1;
+}
+
+
+function getInput() {
+	return new Promise(resolve => {
+		let id;
+		id = onInput(input => {
+			resolve(input);
+			inputCallbacks.splice(id, 1);
+		});
+	});
+}
+
+
 
 ["keyup", "keydown"].forEach(type => window.addEventListener(type, e => {
 	collectInput("keyboard", e.code, e.type == "keydown");
@@ -107,20 +129,6 @@ function gamepadDisconnection() {
 	}
 }
 
-function onInput(cb) {
-	return inputCallbacks.push(cb) - 1;
-}
-
-function getInput() {
-	return new Promise(resolve => {
-		let id;
-		id = onInput(input => {
-			resolve(input);
-			inputCallbacks.splice(id, 1);
-		});
-	});
-}
-
 
 function createPopup(button) {
 	if (document.querySelector('.bind-popup')) {
@@ -174,10 +182,6 @@ function deletePopup() {
 }
 
 
-function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 
 async function bindInput(button) {
 	if (bindings[button]) return;
@@ -189,10 +193,21 @@ async function bindInput(button) {
 	while (!bindingConfirmed) {
 		let input = await getInput();
 
+		let buttons = getButtonsFromInput(input);
+		if (buttons.includes("backup")) {
+			return cancelBind();
+		}
+
 		editPrompt(`Press ${input.device} - ${input.action} again to confirm binding`);
 		let input2 = {};
 		while (Math.sign(input.value) !== Math.sign(input2.value)) {
 			input2 = await getInput();
+
+
+			let buttons = getButtonsFromInput(input2);
+			if (buttons.map(b => b.button).includes("backup")) {
+				return cancelBind();
+			}
 		}
 
 		if (input.device == input2.device && input.action == input2.action) {
@@ -220,6 +235,11 @@ async function bindAll() {
 		await bindInput(button);
 	}
 	localStorage.setItem("stb_bindings", JSON.stringify(bindings));
+}
+
+function cancelBind() {
+	deletePopup();
+	inputCallbacks.length = 0;
 }
 
 
@@ -255,10 +275,10 @@ function connectToGame() {
 		for (const button of buttons) {
 			if (button.value) {
 				console.debug("Holding", button.button);
-				SkyRemote.holdButton(button.button, portalWindow, true);
+				SkyRemote.holdButton(button.button);
 			} else {
 				console.debug("Releasing", button.button);
-				SkyRemote.releaseButton(button.button, portalWindow, true);
+				SkyRemote.releaseButton(button.button);
 			}
 		}
 	});
@@ -266,10 +286,11 @@ function connectToGame() {
 
 function touchstart(e) {
 	e.target.removeEventListener("touchstart", touchstart);
-	deletePopup();
-	inputCallbacks.length = 0;
+	cancelBind();
+	document.querySelectorAll('p').forEach(p => p.remove());
 	document.body.appendChild(createSkyRemoteContainer());
 	setupMobileControls();
+	resizeCanvas();
 
 }
 
@@ -281,8 +302,6 @@ async function init() {
 };
 
 init();
-
-
 
 
 window.addEventListener("gamepadconnected", gamepadConnection);
