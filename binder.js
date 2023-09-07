@@ -303,8 +303,6 @@ function touchstart(e) {
 	document.querySelectorAll('p').forEach(p => p.remove());
 	document.body.appendChild(createSkyRemoteContainer());
 	setupMobileControls();
-	resizeCanvas();
-
 }
 
 

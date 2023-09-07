@@ -1,23 +1,3 @@
-html,
-body {
-	margin: 0;
-	padding: 0;
-	width: 100vw;
-	height: 100vh;
-	overflow: hidden;
-}
-
-* {
-
-	user-select: none;
-}
-
-body {
-	user-select: none;
-	display: flex;
-	flex-direction: column;
-}
-
 .bind-popup {
 	background-color: hsla(0, 0%, 83%, 0.9);
 	border-radius: 10px;
@@ -36,41 +16,113 @@ body {
 	height: fit-content;
 }
 
-div.emscripten,
-figure {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	translate: -50% -50%;
-	z-index: 2;
+:root {
+	font-family: 'Times New Roman', Times, serif;
+	line-height: 1.5;
+	font-weight: 400;
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-text-size-adjust: 100%;
+	-webkit-tap-highlight-color: transparent;
 }
 
-div.emscripten_border {
-	flex: 1;
-	width: 100%;
-	height: 100%;
-	border: none;
-	position: relative;
-	background-color: gray;
-	border: none;
+*,
+:before,
+:after {
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	background-repeat: no-repeat;
 }
 
 canvas {
+	vertical-align: top;
+}
+
+.shadow {
+	overflow: hidden;
+	border-radius: .2rem;
+	position: relative;
+	z-index: 1;
+	max-height: 100%;
+}
+
+.shadow:after {
+	content: "";
+	pointer-events: none;
 	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 5;
+	-webkit-box-shadow: inset 0px 1px 3px 0 rgba(0, 0, 0, .1), inset 0px 2px 4px 0 rgba(0, 0, 0, .5);
+	box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), inset 0 2px 4px rgba(0, 0, 0, .5);
+}
+
+.emscripten_border {
+	border-radius: .2rem;
+	position: relative;
+	background-color: #06070c;
+	z-index: 1;
+}
+
+body {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: 0;
+	padding: 1.3rem;
+	padding-bottom: 0 !important;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+
+
+body:after {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: grey;
+	z-index: -1;
+}
+
+
+canvas {
+	image-rendering: pixelated;
+	width: 100%;
+	height: auto;
+	object-fit: contain;
+	max-height: calc(100vh - 270px);
 }
 
 #sky-remote-container {
-	flex-basis: 336px;
-	/* flex: 0 1 336px; */
-
+	width: 100%;
+	position: relative;
+	z-index: 1;
+	bottom: 0;
+	height: 260px;
+	-ms-touch-action: none;
+	touch-action: none;
+	margin: 0 auto;
 }
+
 
 #sky-remote {
 	position: relative;
 	bottom: 0;
 	background-color: gray;
 	height: 100%;
-	/* width: 100vw; */
+	width: 100%;
 	touch-action: none;
 	user-select: none;
 }
@@ -78,10 +130,14 @@ canvas {
 
 #sky-remote-dpad {
 	position: absolute;
-	bottom: 70px;
+	bottom: 26px;
 	left: 1px;
 	width: 184px;
 	height: 184px;
+	background-color: turquoise;
+	border-radius: 50%;
+	background-size: 165px;
+	background-position: 10px;
 }
 
 #sky-remote-dpad-left,
@@ -93,74 +149,12 @@ canvas {
 	box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1), 0 5px 5px rgba(0, 0, 0, 0.2), 0 3px 5px rgba(0, 0, 0, 0.2);
 }
 
-#sky-remote-dpad:before {
-	content: "";
-	display: block;
-	width: 48px;
-	height: 48px;
-	position: absolute;
-	left: 68px;
-	top: 68px;
-}
 
-#sky-remote-dpad:after {
-	content: "";
-	display: block;
-	position: absolute;
-	pointer-events: none;
-	width: 184px;
-	height: 184px;
-	z-index: 1;
-	background-color: turquoise;
-	border-radius: 50%;
-	background-size: 165px;
-	background-position: 10px;
-}
-
-#sky-remote-dpad-left {
-	position: absolute;
-	left: 20px;
-	top: 68px;
-	width: 48px;
-	height: 48px;
-	border-top-left-radius: 4px;
-	border-bottom-left-radius: 4px;
-}
-
-#sky-remote-dpad-right {
-	position: absolute;
-	left: 116px;
-	top: 68px;
-	width: 48px;
-	height: 48px;
-	border-top-right-radius: 4px;
-	border-bottom-right-radius: 4px;
-}
-
-#sky-remote-dpad-up {
-	position: absolute;
-	left: 68px;
-	top: 20px;
-	width: 48px;
-	height: 48px;
-	border-top-left-radius: 4px;
-	border-top-right-radius: 4px;
-}
-
-#sky-remote-dpad-down {
-	position: absolute;
-	left: 68px;
-	top: 116px;
-	width: 48px;
-	height: 48px;
-	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
-}
 
 #sky-remote-select {
 	position: absolute;
 	right: 10px;
-	bottom: 100px;
+	bottom: 43px;
 	background-color: cyan;
 	border-radius: 50%;
 	height: 110px;
@@ -190,7 +184,7 @@ canvas {
 #sky-remote-red {
 	background-color: red;
 	right: 130px;
-	bottom: 60px;
+	bottom: 19px;
 }
 
 #sky-remote-backup {
@@ -252,19 +246,19 @@ canvas {
 #sky-remote-green {
 	background-color: green;
 	right: 130px;
-	bottom: 139px;
+	bottom: 88px;
 }
 
 #sky-remote-yellow {
 	background-color: yellow;
 	right: 86px;
-	bottom: 206px;
+	bottom: 149px;
 }
 
 #sky-remote-blue {
 	background-color: blue;
 	right: 15px;
-	bottom: 226px;
+	bottom: 169px;
 }
 
 #game-log-container {
@@ -307,4 +301,78 @@ canvas {
 	color: #f17678;
 	background-color: #290000;
 	border-color: #5c0000;
+}
+
+
+
+
+@media (max-width: 440px) {
+	body {
+		padding: .5rem;
+	}
+
+	body:after {
+		border-radius: .7rem;
+	}
+
+
+	#sky-remote-dpad {
+		left: 0px;
+
+		width: 150px;
+		height: 150px;
+	}
+
+	#sky-remote-select {
+		width: 80px;
+		height: 80px;
+	}
+
+
+	#sky-remote-red,
+	#sky-remote-green,
+	#sky-remote-yellow,
+	#sky-remote-blue,
+	#sky-remote-log {
+		height: 40px;
+		width: 40px;
+	}
+
+	#sky-remote-blue {
+		bottom: 136px;
+	}
+
+	#sky-remote-yellow {
+		right: 66px;
+		bottom: 124px;
+	}
+
+	#sky-remote-green {
+		right: 106px;
+		bottom: 80px;
+	}
+
+	#sky-remote-red {
+		right: 97px;
+		bottom: 19px;
+	}
+}
+
+#spinner {
+	display: none;
+}
+
+body>.emscripten {
+	position: absolute;
+	top: 10%;
+	z-index: 2;
+	color: white;
+	left: 50%;
+	translate: -50% -50%;
+	height: 10px;
+
+}
+
+#status {
+	translate: -50% 1em;
 }

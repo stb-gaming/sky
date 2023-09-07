@@ -19,14 +19,6 @@ function createSkyRemoteContainer() {
 	// Create the dpad
 	const dpad = document.createElement("div");
 	dpad.id = "sky-remote-dpad";
-
-	// Create dpad buttons
-	const dpadButtons = ["up", "left", "right", "down"];
-	dpadButtons.forEach((direction) => {
-		const button = document.createElement("div");
-		button.id = `sky-remote-dpad-${direction}`;
-		dpad.appendChild(button);
-	});
 	skyRemote.appendChild(dpad);
 
 	// Create colored buttons
