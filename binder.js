@@ -81,7 +81,7 @@ function getInput(device) {
 
 
 ["keyup", "keydown"].forEach(type => window.addEventListener(type, e => {
-	collectInput("keyboard", e.code, e.type == "keydown");
+	collectInput("Keyboard", e.code, e.type == "keydown");
 }));
 
 function countGamepads() {
@@ -158,6 +158,10 @@ function popupExists() {
 function createPopup(device, button) {
 	if (popupExists()) {
 		editPrompt(`Press a key to bind ${button}...`);
+
+		const bindDevice = document.getElementById('bind-devuce');
+		bindDevice.innerText = device;
+
 		return;
 	}
 
@@ -168,6 +172,7 @@ function createPopup(device, button) {
 	heading.textContent = 'New Device: ';
 
 	const deviceText = document.createElement('h3');
+	deviceText.id = "bind-device";
 	deviceText.textContent = device;
 
 	const prompt = document.createElement('p');
