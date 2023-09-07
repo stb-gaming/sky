@@ -38,6 +38,8 @@ async function setAppUrl(url) {
 
 window.addEventListener("DOMContentLoaded", () => {
 	setAppUrl(urlParams.get("url"));
+
+
 });
 
 

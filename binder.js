@@ -1,7 +1,8 @@
 const devices = {},
 	bindings = JSON.parse(localStorage.getItem("stb_bindings")) || {},
 	doublePress = 100,
-	inputCallbacks = [];
+	inputCallbacks = [],
+	newDeviceQueue = [];
 let gamepadAnimationFrame = null,
 	lastGamepads = [],
 	lastInput = null;
@@ -16,9 +17,27 @@ function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function deviceBound(device) {
+	if (!Object.keys(bindings).length) return false;
+	for (const button in bindings) {
+		if (!bindings[button].hasOwnProperty(device)) {
+			return false;
+		}
+	}
+	return true;
+}
+
 function collectInput(device, action, value) {
 	let currentTime = getTime();
-	if (!devices.hasOwnProperty(device)) devices[device] = {};
+	if (!devices.hasOwnProperty(device)) {
+		devices[device] = {};
+		if (!deviceBound(device) && !newDeviceQueue.includes(device)) {
+			newDeviceQueue.push(device);
+			if (!popupExists()) bindAll();
+			return;
+		}
+
+	}
 	if (!devices[device].hasOwnProperty(action)) devices[device][action] = { times: 0 };
 
 	const inputStatus = devices[device][action];
@@ -47,12 +66,14 @@ function onInput(cb) {
 }
 
 
-function getInput() {
+function getInput(device) {
 	return new Promise(resolve => {
 		let id;
 		id = onInput(input => {
-			resolve(input);
-			inputCallbacks.splice(id, 1);
+			if (!device || input.device == device) {
+				resolve(input);
+				inputCallbacks.splice(id, 1);
+			}
 		});
 	});
 }
@@ -129,9 +150,13 @@ function gamepadDisconnection() {
 	}
 }
 
+function popupExists() {
+	return !!document.querySelector('.bind-popup');
+}
 
-function createPopup(button) {
-	if (document.querySelector('.bind-popup')) {
+
+function createPopup(device, button) {
+	if (popupExists()) {
 		editPrompt(`Press a key to bind ${button}...`);
 		return;
 	}
@@ -140,29 +165,26 @@ function createPopup(button) {
 	popup.classList.add('bind-popup');
 
 	const heading = document.createElement('h1');
-	heading.textContent = 'Creating Binds';
+	heading.textContent = 'New Device: ';
+
+	const deviceText = document.createElement('h3');
+	deviceText.textContent = device;
 
 	const prompt = document.createElement('p');
 	prompt.id = 'bind-prompt';
 	prompt.textContent = `Press a key to bind ${button}...`;
 
-	const touch = document.createElement('p');
-	touch.textContent = 'Tap here to start touch controls';
 
-	const info = document.createElement('p');
-	info.textContent = 'Supports: Keyboards, Controllers (TV Remotes are some combination of controller or keybaord)';
 	const notice = document.createElement('em');
 	notice.textContent = 'Please dont press system buttons like "Home" or "Back", this website will not detect them, (and yes i tried)';
 
 	popup.appendChild(heading);
+	popup.appendChild(deviceText);;
 	popup.appendChild(prompt);
-	popup.appendChild(touch);
-	popup.appendChild(info);
 	popup.appendChild(notice);
 
 	document.body.appendChild(popup);
 
-	popup.addEventListener("touchstart", touchstart);
 }
 
 function editPrompt(newprompt) {
@@ -177,37 +199,24 @@ function deletePopup() {
 	if (popup) {
 		popup.remove();
 	}
-
-	popup.removeEventListener("touchstart", touchstart);
 }
 
 
 
-async function bindInput(button) {
-	if (bindings[button]) return;
-	createPopup(button);
+async function bindInput(device, button) {
+	createPopup(device, button);
 	let bindingConfirmed = false;
 	if (!bindings.hasOwnProperty(button)) bindings[button] = {};
 	const btnBindings = bindings[button];
 
 	while (!bindingConfirmed) {
-		let input = await getInput();
+		let input = {};
+		while (!input.value) input = await getInput(device);
 
-		let buttons = getButtonsFromInput(input);
-		if (buttons.includes("backup")) {
-			return cancelBind();
-		}
-
-		editPrompt(`Press ${input.device} - ${input.action} again to confirm binding`);
+		editPrompt(`Press ${input.action} again to confirm binding`);
 		let input2 = {};
 		while (Math.sign(input.value) !== Math.sign(input2.value)) {
-			input2 = await getInput();
-
-
-			let buttons = getButtonsFromInput(input2);
-			if (buttons.map(b => b.button).includes("backup")) {
-				return cancelBind();
-			}
+			input2 = await getInput(device);
 		}
 
 		if (input.device == input2.device && input.action == input2.action) {
@@ -217,7 +226,7 @@ async function bindInput(button) {
 			binding.value = input.value;
 			binding.times = input.times;
 			binding.precise = input.value === input2.value;
-			editPrompt(`Successfully bound ${button} to ${input.device} - ${binding.action}`);
+			editPrompt(`Successfully bound ${button} to ${binding.action}`);
 
 			bindingConfirmed = true;
 			await sleep(1000);
@@ -231,10 +240,15 @@ async function bindInput(button) {
 }
 
 async function bindAll() {
-	for (const button of ["select", "backup", "up", "down", "left", "right", "red", "green", "yellow", "blue"]) {
-		await bindInput(button);
+	while (newDeviceQueue.length) {
+		const device = newDeviceQueue.shift();
+		for (const button of ["select", "backup", "up", "down", "left", "right", "red", "green", "yellow", "blue"]) {
+			await bindInput(device, button);
+		}
+		localStorage.setItem("stb_bindings", JSON.stringify(bindings));
 	}
-	localStorage.setItem("stb_bindings", JSON.stringify(bindings));
+
+	deletePopup();
 }
 
 function cancelBind() {
@@ -271,7 +285,6 @@ function getButtonsFromInput(input) {
 function connectToGame() {
 	onInput(input => {
 		let buttons = getButtonsFromInput(input);
-		console.debug(buttons);
 		for (const button of buttons) {
 			if (button.value) {
 				console.debug("Holding", button.button);
@@ -296,8 +309,6 @@ function touchstart(e) {
 
 
 async function init() {
-	await bindAll();
-	deletePopup();
 	await connectToGame();
 };
 
@@ -305,3 +316,4 @@ init();
 
 
 window.addEventListener("gamepadconnected", gamepadConnection);
+window.addEventListener("touchstart", touchstart);
