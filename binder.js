@@ -218,7 +218,7 @@ async function bindInput(device, button) {
 		let input = {};
 		while (!input.value) input = await getInput(device);
 
-		editPrompt(`Press ${input.action} again to confirm binding`);
+		editPrompt(`Press ${input.action} again to confirm binding to ${button}`);
 		let input2 = {};
 		while (Math.sign(input.value) !== Math.sign(input2.value)) {
 			input2 = await getInput(device);
