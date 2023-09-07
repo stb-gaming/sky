@@ -298,7 +298,7 @@ function connectToGame() {
 }
 
 function touchstart(e) {
-	e.target.removeEventListener("touchstart", touchstart);
+	window.removeEventListener("touchstart", touchstart);
 	cancelBind();
 	document.querySelectorAll('p').forEach(p => p.remove());
 	document.body.appendChild(createSkyRemoteContainer());
