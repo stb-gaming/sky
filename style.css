@@ -128,6 +128,11 @@ canvas {
 	user-select: none;
 }
 
+#sky-remote,
+#sky-remote>* {
+	user-select: none;
+}
+
 
 #sky-remote-dpad {
 	position: absolute;

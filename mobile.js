@@ -49,10 +49,11 @@ function createSkyRemoteContainer() {
 
 
 
-let log = (function () {
-	let { log, info, warn, error } = window.console;
-	return { log, info, warn, error };
-})(),
+let lastTouchEnd = 0,
+	log = (function () {
+		let { log, info, warn, error } = window.console;
+		return { log, info, warn, error };
+	})(),
 	queuedLogs = [];
 function logLog(type, ...args) {
 	log[type](...args);
@@ -116,6 +117,9 @@ function setupMobileControls() {
 	let dpad = document.getElementById("sky-remote-dpad");
 
 	function touchEvent(e) {
+		if (e.type == "touchmove") {
+			disablePinchZoom(e);
+		}
 		let dpad = e.currentTarget,
 			bounds = dpad.getBoundingClientRect(),
 			touch = e.targetTouches[0],
@@ -147,11 +151,24 @@ function setupMobileControls() {
 	dpad.addEventListener("touchstart", touchEvent);
 	dpad.addEventListener("touchmove", touchEvent);
 	dpad.addEventListener("touchend", e => {
+		disableDoubleTapZoom();
 		["up", "down", "left", "right"].forEach(d =>
 			SkyRemote.releaseButton(d));
 	});
 }
 
+function disablePinchZoom(e) {
+	if (e.scale !== 1) { e.preventDefault(); }
+}
+
+
+function disableDoubleTapZoom(e) {
+	var now = (new Date()).getTime();
+	if (now - lastTouchEnd <= 300) {
+		e.preventDefault();
+	}
+	lastTouchEnd = now;
+}
 
 
 window.getQueuedLogs = function () {
