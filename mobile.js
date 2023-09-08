@@ -1,13 +1,13 @@
 const colours = {
-	"red": {"down": "darkred", "up": "red"},
-	"blue": {"down": "darkblue", "up": "blue"},
-	"yellow": {"down": "goldenrod", "up": "yellow"},
-	"green": {"down": "darkgreen", "up": "green"},
-	"select": {"down": "darkcyan", "up": "cyan"},
-	"backup": {"down": "dimgrey", "up": "black"},
-	"help": {"down": "dimgrey", "up": "black"},
-	"log": {"down": "dimgrey", "up": "black"}
-}
+	"red": { "down": "darkred", "up": "red" },
+	"blue": { "down": "darkblue", "up": "blue" },
+	"yellow": { "down": "goldenrod", "up": "yellow" },
+	"green": { "down": "darkgreen", "up": "green" },
+	"select": { "down": "darkcyan", "up": "cyan" },
+	"backup": { "down": "dimgrey", "up": "black" },
+	"help": { "down": "dimgrey", "up": "black" },
+	"log": { "down": "dimgrey", "up": "black" }
+};
 
 function createSkyRemoteContainer() {
 	// Create the main container
@@ -112,20 +112,20 @@ function setupMobileControls() {
 	].forEach(b => {
 		b.element.addEventListener("touchstart", () => {
 			if (typeof colours[b.button] !== 'undefined' && colours[b.button].down) {
-				b.element.style.backgroundColor = colours[b.button].down
+				b.element.style.backgroundColor = colours[b.button].down;
 			}
 			SkyRemote.holdButton(b.button);
 		});
 		b.element.addEventListener("touchend", () => {
 			if (typeof colours[b.button] !== 'undefined' && colours[b.button].up) {
-				b.element.style.backgroundColor = colours[b.button].up
+				b.element.style.backgroundColor = colours[b.button].up;
 			}
 			SkyRemote.releaseButton(b.button);
 		});
 	});
 	let toggleLog = () => {
 		let logContainer = document.getElementById("game-log-container");
-		console.log(logContainer);
+		// console.log(logContainer);
 		logContainer.style.display = logContainer.style.display ? null : "none";
 	};
 	document.getElementById("sky-remote-log").addEventListener("touchend", toggleLog);
@@ -146,7 +146,7 @@ function setupMobileControls() {
 			deadZone = .2;
 		if (Math.abs(x) < deadZone) x = 0;
 		if (Math.abs(y) < deadZone) y = 0;
-		console.log({ x, y });
+		//console.log({ x, y });
 		if (Math.sign(x) < 0) {
 			SkyRemote.releaseButton("right");
 			SkyRemote.holdButton("left");
