@@ -247,7 +247,7 @@ async function bindInput(device, button) {
 async function bindAll() {
 	while (newDeviceQueue.length) {
 		const device = newDeviceQueue.shift();
-		for (const button of ["select", "backup", "up", "down", "left", "right", "red", "green", "yellow", "blue"]) {
+		for (const button of ["select", "backup", "up", "down", "left", "right", "red", "green", "yellow", "blue", "help"]) {
 			await bindInput(device, button);
 		}
 		localStorage.setItem("stb_bindings", JSON.stringify(bindings));
