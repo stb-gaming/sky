@@ -123,12 +123,15 @@ function setupMobileControls() {
 			SkyRemote.releaseButton(b.button);
 		});
 	});
+	const logButton = document.getElementById("sky-remote-log");
 	let toggleLog = () => {
+		logButton.style.backgroundColor = colours.log.up;
 		let logContainer = document.getElementById("game-log-container");
 		// console.log(logContainer);
 		logContainer.style.display = logContainer.style.display ? null : "none";
 	};
-	document.getElementById("sky-remote-log").addEventListener("touchend", toggleLog);
+	logButton.addEventListener("touchstart", () => { logButton.style.backgroundColor = colours.log.down });
+	logButton.addEventListener("touchend", toggleLog);
 	toggleLog();
 
 	let dpad = document.getElementById("sky-remote-dpad");
