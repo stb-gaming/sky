@@ -181,7 +181,7 @@ function createPopup(device, button) {
 
 
 	const notice = document.createElement('em');
-	notice.textContent = 'Please dont press system buttons like "Home" or "Back", this website will not detect them, (and yes i tried)';
+	notice.textContent = 'Pressing system buttons such as the home or back button will not work - this has been tested.';
 
 	popup.appendChild(heading);
 	popup.appendChild(deviceText);;
