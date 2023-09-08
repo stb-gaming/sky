@@ -159,7 +159,7 @@ function createPopup(device, button) {
 	if (popupExists()) {
 		editPrompt(`Press a key to bind ${button}...`);
 
-		const bindDevice = document.getElementById('bind-devuce');
+		const bindDevice = document.getElementById('bind-device');
 		bindDevice.innerText = device;
 
 		return;
