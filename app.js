@@ -1,4 +1,4 @@
-const gameEvents = {};
+const urlParams = new URLSearchParams(location.search), , gameEvents = {};
 
 function toCORS(url) {
 	return 'https://corsproxy.io/?' + encodeURIComponent(url); (edited);
@@ -36,7 +36,7 @@ async function setAppUrl(url) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-	setAppUrl("https://denki.co.uk" + location.pathname);
+	setAppUrl(urlParams.get("url") || "https://denki.co.uk" + location.pathname);
 });
 
 
