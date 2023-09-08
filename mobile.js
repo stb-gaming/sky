@@ -1,3 +1,14 @@
+const colours = {
+	"red": {"down": "darkred", "up": "red"},
+	"blue": {"down": "darkblue", "up": "blue"},
+	"yellow": {"down": "goldenrod", "up": "yellow"},
+	"green": {"down": "darkgreen", "up": "green"},
+	"select": {"down": "darkcyan", "up": "cyan"},
+	"backup": {"down": "dimgrey", "up": "black"},
+	"help": {"down": "dimgrey", "up": "black"},
+	"log": {"down": "dimgrey", "up": "black"}
+}
+
 function createSkyRemoteContainer() {
 	// Create the main container
 	const skyRemoteContainer = document.createElement("span");
@@ -100,9 +111,15 @@ function setupMobileControls() {
 		}
 	].forEach(b => {
 		b.element.addEventListener("touchstart", () => {
+			if (typeof colours[b.button] !== 'undefined' && colours[b.button].down) {
+				b.element.style.backgroundColor = colours[b.button].down
+			}
 			SkyRemote.holdButton(b.button);
 		});
 		b.element.addEventListener("touchend", () => {
+			if (typeof colours[b.button] !== 'undefined' && colours[b.button].up) {
+				b.element.style.backgroundColor = colours[b.button].up
+			}
 			SkyRemote.releaseButton(b.button);
 		});
 	});
