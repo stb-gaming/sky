@@ -130,7 +130,7 @@ function setupMobileControls() {
 		// console.log(logContainer);
 		logContainer.style.display = logContainer.style.display ? null : "none";
 	};
-	logButton.addEventListener("touchstart", () => { logButton.style.backgroundColor = colours.log.down });
+	logButton.addEventListener("touchstart", () => { logButton.style.backgroundColor = colours.log.down; });
 	logButton.addEventListener("touchend", toggleLog);
 	toggleLog();
 
@@ -178,13 +178,13 @@ function setupMobileControls() {
 }
 
 function disablePinchZoom(e) {
-	if (e.scale !== 1) { e.preventDefault(); }
+	if (typeof e !== 'undefined' && e.scale !== 1) { e.preventDefault(); }
 }
 
 
 function disableDoubleTapZoom(e) {
 	var now = (new Date()).getTime();
-	if (now - lastTouchEnd <= 300) {
+	if (now - lastTouchEnd <= 300 && typeof e !== 'undefined') {
 		e.preventDefault();
 	}
 	lastTouchEnd = now;
@@ -192,8 +192,7 @@ function disableDoubleTapZoom(e) {
 
 
 window.getQueuedLogs = function () {
-	console.log(queuedLogs.map(l => l.classList.toString() + ": " + l.innerText).join(`
-		`));
+	console.log(queuedLogs.map(l => l.classList.toString() + ": " + l.innerText).join(``));
 };
 
 
