@@ -215,7 +215,7 @@ Object.keys(log).forEach(type => {
 
 function touchstart(e) {
 	window.removeEventListener("touchstart", touchstart);
-	cancelBind();
+	if (typeof cancelBind !== 'undefined) cancelBind();
 	document.querySelectorAll('p').forEach(p => p.remove());
 	document.body.appendChild(createSkyRemoteContainer());
 	setupMobileControls();
