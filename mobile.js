@@ -1,3 +1,5 @@
+const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : uWindow;
+
 const colours = {
 	"red": { "down": "darkred", "up": "red" },
 	"blue": { "down": "darkblue", "up": "blue" },
@@ -62,7 +64,7 @@ function createSkyRemoteContainer() {
 
 let lastTouchEnd = 0,
 	log = (function () {
-		let { log, info, warn, error } = window.console;
+		let { log, info, warn, error } = uWindow.console;
 		return { log, info, warn, error };
 	})(),
 	queuedLogs = [];
@@ -202,19 +204,19 @@ function disableDoubleTapZoom(e) {
 }
 
 
-window.getQueuedLogs = function () {
+uWindow.getQueuedLogs = function () {
 	console.log(queuedLogs.map(l => l.classList.toString() + ": " + l.innerText).join(``));
 };
 
 
 Object.keys(log).forEach(type => {
-	window.console[type] = logLog.bind(null, type);
+	uWindow.console[type] = logLog.bind(null, type);
 });
 
 
 
 function touchstart(e) {
-	window.removeEventListener("touchstart", touchstart);
+	uWindow.removeEventListener("touchstart", touchstart);
 	if (typeof cancelBind !== 'undefined') cancelBind();
 	document.querySelectorAll('p').forEach(p => p.remove());
 	document.body.appendChild(createSkyRemoteContainer());
@@ -223,7 +225,7 @@ function touchstart(e) {
 
 
 function setupTouchEvents() {
-	createEvent(window, "touchstart", touchstart);
+	createEvent(uWindow, "touchstart", touchstart);
 }
 
 function removeTouchEvents() {
