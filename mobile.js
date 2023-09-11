@@ -7,7 +7,7 @@ const colours = {
 	"backup": { "down": "dimgrey", "up": "black" },
 	"help": { "down": "dimgrey", "up": "black" },
 	"log": { "down": "dimgrey", "up": "black" }
-};
+}, mobileEvents = [];
 
 function createSkyRemoteContainer() {
 	// Create the main container
@@ -79,6 +79,11 @@ function logLog(type, ...args) {
 	}
 }
 
+function createEvent(element, type, callback) {
+	mobileEvents.push({ element, type, callback });
+	element.addEventListener(type, callback);
+}
+
 function setupMobileControls() {
 	[
 		{
@@ -110,13 +115,19 @@ function setupMobileControls() {
 			element: document.getElementById("sky-remote-blue")
 		}
 	].forEach(b => {
-		b.element.addEventListener("touchstart", () => {
+		createEvent(b.element, "touchstart", () => {
 			if (typeof colours[b.button] !== 'undefined' && colours[b.button].down) {
 				b.element.style.backgroundColor = colours[b.button].down;
 			}
 			SkyRemote.holdButton(b.button);
 		});
-		b.element.addEventListener("touchend", () => {
+		createEvent(b.element, "touchstart", () => {
+			if (typeof colours[b.button] !== 'undefined' && colours[b.button].down) {
+				b.element.style.backgroundColor = colours[b.button].down;
+			}
+			SkyRemote.holdButton(b.button);
+		});
+		createEvent(b.element, "touchend", () => {
 			if (typeof colours[b.button] !== 'undefined' && colours[b.button].up) {
 				b.element.style.backgroundColor = colours[b.button].up;
 			}
@@ -130,8 +141,8 @@ function setupMobileControls() {
 		// console.log(logContainer);
 		logContainer.style.display = logContainer.style.display ? null : "none";
 	};
-	logButton.addEventListener("touchstart", () => { logButton.style.backgroundColor = colours.log.down; });
-	logButton.addEventListener("touchend", toggleLog);
+	createEvent(logButton, "touchstart", () => { logButton.style.backgroundColor = colours.log.down; });
+	createEvent(logButton, "touchend", toggleLog);
 	toggleLog();
 
 	let dpad = document.getElementById("sky-remote-dpad");
@@ -168,9 +179,9 @@ function setupMobileControls() {
 		}
 	}
 
-	dpad.addEventListener("touchstart", touchEvent);
-	dpad.addEventListener("touchmove", touchEvent);
-	dpad.addEventListener("touchend", e => {
+	createEvent(dpad, "touchstart", touchEvent);
+	createEvent(dpad, "touchmove", touchEvent);
+	createEvent(dpad, "touchend", e => {
 		disableDoubleTapZoom();
 		["up", "down", "left", "right"].forEach(d =>
 			SkyRemote.releaseButton(d));
@@ -199,3 +210,26 @@ window.getQueuedLogs = function () {
 Object.keys(log).forEach(type => {
 	window.console[type] = logLog.bind(null, type);
 });
+
+
+
+function touchstart(e) {
+	window.removeEventListener("touchstart", touchstart);
+	cancelBind();
+	document.querySelectorAll('p').forEach(p => p.remove());
+	document.body.appendChild(createSkyRemoteContainer());
+	setupMobileControls();
+}
+
+
+function setupTouchEvents() {
+	createEvent(window, "touchstart", touchstart);
+}
+
+function removeTouchEvents() {
+	let mobileEvent;
+	do {
+		mobileEvent = mobileEvents.pop();
+		mobileEvent.element.removeEventListener(mobileEvent.type, mobileEvent.callback);
+	} while (!!mobileEvents.length);
+}

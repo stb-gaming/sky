@@ -1,4 +1,4 @@
-const urlParams = new URLSearchParams(location.search), 
+const urlParams = new URLSearchParams(location.search),
 	gameEvents = {};
 
 function toCORS(url) {
@@ -38,6 +38,11 @@ async function setAppUrl(url) {
 
 window.addEventListener("DOMContentLoaded", () => {
 	setAppUrl(urlParams.get("url") || "https://denki.co.uk" + location.pathname);
+
+	setupTouchEvents();
+	addGamepadEvents();
+	addKeybaordEvents();
+	connectToGame();
 });
 
 
