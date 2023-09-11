@@ -1,4 +1,4 @@
-const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : uWindow;
+const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
 
 const colours = {
 	"red": { "down": "darkred", "up": "red" },
