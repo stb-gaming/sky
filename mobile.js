@@ -69,10 +69,22 @@ let lastTouchEnd = 0,
 	})(),
 	queuedLogs = [];
 function logLog(type, ...args) {
+	const error = new Error();
+	const stackTrace = error.stack.split("\n")[2].trim();
+	const [_, fileName, lineNumber] = /([^/]+):(\d+):\d+/g.exec(stackTrace);
+
 	log[type](...args);
-	let logLine = document.createElement("p");
+	let logLine = document.createElement("span");
 	logLine.classList.add(type);
-	logLine.innerText = args.join(" ");
+	let logText = document.createElement("p");
+	logText.innerText = args.join(" ");
+	logLine.appendChild(logText);
+	let logLoc = document.createElement("span");
+	logLoc.innerText = `${fileName}:${lineNumber}`;
+	logLine.appendChild(logLoc);
+
+
+
 	if (logLine.innerText === "Skyapp: SkyApp_Initialise)") resizeCanvas();
 	if (document.getElementById("game-log")) {
 		document.getElementById("game-log").appendChild(logLine);
@@ -140,7 +152,7 @@ function setupMobileControls() {
 	let toggleLog = () => {
 		logButton.style.backgroundColor = colours.log.up;
 		let logContainer = document.getElementById("game-log-container");
-		// console.log(logContainer);
+		// console.debug(logContainer);
 		logContainer.style.display = logContainer.style.display ? null : "none";
 	};
 	createEvent(logButton, "touchstart", () => { logButton.style.backgroundColor = colours.log.down; });
@@ -162,7 +174,7 @@ function setupMobileControls() {
 			deadZone = .2;
 		if (Math.abs(x) < deadZone) x = 0;
 		if (Math.abs(y) < deadZone) y = 0;
-		//console.log({ x, y });
+		//console.debug({ x, y });
 		if (Math.sign(x) < 0) {
 			SkyRemote.releaseButton("right");
 			SkyRemote.holdButton("left");
