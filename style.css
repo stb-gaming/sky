@@ -95,6 +95,7 @@ body:after {
 	right: 0;
 	background-color: grey;
 	z-index: -1;
+	height: 100vh;
 }
 
 
