@@ -1,3 +1,14 @@
+/**
+ * Init
+ * addGamepadEvents()
+ * addKeybaordEvents()
+ * connectToGame()
+ *
+ * React useEffect return
+ * removeGamepadEvents()
+ * removeKeyboardEvents()
+ */
+
 const devices = {},
 	bindings = JSON.parse(localStorage.getItem("stb_bindings")) || {},
 	doublePress = 100,
@@ -78,11 +89,18 @@ function getInput(device) {
 	});
 }
 
-
-
-["keyup", "keydown"].forEach(type => window.addEventListener(type, e => {
+function keyboardCollector(e) {
 	collectInput("Keyboard", e.code, e.type == "keydown");
-}));
+}
+
+function addKeyboardEvents() {
+	["keyup", "keydown"].forEach(type => window.addEventListener(type, keyboardCollector));
+}
+
+function removeKeyboardEvents() {
+	["keyup", "keydown"].forEach(type => window.removeEventListener(type, keyboardCollector));
+}
+
 
 function countGamepads() {
 	return navigator.getGamepads().filter(g => !!g).length;
@@ -132,6 +150,8 @@ function startGamepadLoop() {
 	gamepadAnimationFrame = requestAnimationFrame(gamepadLoop);
 }
 
+
+
 function gamepadConnection() {
 	console.debug("New Gamepad");
 	if (countGamepads() > 0) {
@@ -148,6 +168,18 @@ function gamepadDisconnection() {
 		window.addEventListener("gamepadconnected", gamepadConnection);
 		window.removeEventListener("gamepaddisconnected", gamepadDisconnection);
 	}
+}
+
+
+
+function removeGamepadEvents() {
+	window.removeEventListener("gamepadconnected", gamepadConnection);
+	cancelAnimationFrame(gamepadAnimationFrame);
+	window.removeEventListener("gamepaddisconnected", gamepadDisconnection);
+}
+
+function addGamepadEvents() {
+	window.addEventListener("gamepadconnected", gamepadConnection);
 }
 
 function popupExists() {
@@ -301,22 +333,3 @@ function connectToGame() {
 		}
 	});
 }
-
-function touchstart(e) {
-	window.removeEventListener("touchstart", touchstart);
-	cancelBind();
-	document.querySelectorAll('p').forEach(p => p.remove());
-	document.body.appendChild(createSkyRemoteContainer());
-	setupMobileControls();
-}
-
-
-async function init() {
-	await connectToGame();
-};
-
-init();
-
-
-window.addEventListener("gamepadconnected", gamepadConnection);
-window.addEventListener("touchstart", touchstart);

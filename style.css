@@ -95,6 +95,7 @@ body:after {
 	right: 0;
 	background-color: grey;
 	z-index: -1;
+	height: 100vh;
 }
 
 
@@ -121,7 +122,6 @@ canvas {
 #sky-remote {
 	position: relative;
 	bottom: 0;
-	background-color: gray;
 	height: 100%;
 	width: 100%;
 	touch-action: none;
@@ -364,13 +364,45 @@ canvas {
 	}
 }
 
-@media (orientation: landscape) {
-	#sky-remote-log {
-		background-color: red;
+@media screen and (orientation: landscape) and (max-height: 680px) {
+	.emscripten_border {
+		position: absolute;
+		left: 50%;
+		translate: -50%;
+		height: calc(100vh - 1.3rem * 2);
+		width: calc(100vw - 1.3rem * 2 - 2 * 200px);
+	}
+
+
+	canvas.emscripten {
+		height: calc(100vh - 1.3rem * 2);
+		margin-left: 0;
+		margin-right: 0;
+		margin-top: auto;
+		margin-bottom: auto;
+		max-height: none;
+	}
+
+	@media (max-width: 440px) {
+
+		.emscripten_border {
+			height: calc(100vh - .5rem * 2);
+		}
+	}
+
+
+	@media (max-width: 845px) {
+		.emscripten_border {
+			width: calc(100vw - .5rem * 2);
+		}
+
+		#sky-remote {
+			opacity: 60%;
+		}
 	}
 }
 
-a #spinner {
+#spinner {
 	display: none;
 }
 

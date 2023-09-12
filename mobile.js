@@ -1,3 +1,5 @@
+const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
+
 const colours = {
 	"red": { "down": "darkred", "up": "red" },
 	"blue": { "down": "darkblue", "up": "blue" },
@@ -7,7 +9,7 @@ const colours = {
 	"backup": { "down": "dimgrey", "up": "black" },
 	"help": { "down": "dimgrey", "up": "black" },
 	"log": { "down": "dimgrey", "up": "black" }
-};
+}, mobileEvents = [];
 
 function createSkyRemoteContainer() {
 	// Create the main container
@@ -62,21 +64,38 @@ function createSkyRemoteContainer() {
 
 let lastTouchEnd = 0,
 	log = (function () {
-		let { log, info, warn, error } = window.console;
+		let { log, info, warn, error } = uWindow.console;
 		return { log, info, warn, error };
 	})(),
 	queuedLogs = [];
 function logLog(type, ...args) {
+	const error = new Error();
+	const stackTrace = error.stack.split("\n")[2].trim();
+	const [_, fileName, lineNumber] = /([^/]+):(\d+):\d+/g.exec(stackTrace);
+
 	log[type](...args);
-	let logLine = document.createElement("p");
+	let logLine = document.createElement("span");
 	logLine.classList.add(type);
-	logLine.innerText = args.join(" ");
+	let logText = document.createElement("p");
+	logText.innerText = args.join(" ");
+	logLine.appendChild(logText);
+	let logLoc = document.createElement("span");
+	logLoc.innerText = `${fileName}:${lineNumber}`;
+	logLine.appendChild(logLoc);
+
+
+
 	if (logLine.innerText === "Skyapp: SkyApp_Initialise)") resizeCanvas();
 	if (document.getElementById("game-log")) {
 		document.getElementById("game-log").appendChild(logLine);
 	} else {
 		queuedLogs.push(logLine);
 	}
+}
+
+function createEvent(element, type, callback) {
+	mobileEvents.push({ element, type, callback });
+	element.addEventListener(type, callback);
 }
 
 function setupMobileControls() {
@@ -110,13 +129,19 @@ function setupMobileControls() {
 			element: document.getElementById("sky-remote-blue")
 		}
 	].forEach(b => {
-		b.element.addEventListener("touchstart", () => {
+		createEvent(b.element, "touchstart", () => {
 			if (typeof colours[b.button] !== 'undefined' && colours[b.button].down) {
 				b.element.style.backgroundColor = colours[b.button].down;
 			}
 			SkyRemote.holdButton(b.button);
 		});
-		b.element.addEventListener("touchend", () => {
+		createEvent(b.element, "touchstart", () => {
+			if (typeof colours[b.button] !== 'undefined' && colours[b.button].down) {
+				b.element.style.backgroundColor = colours[b.button].down;
+			}
+			SkyRemote.holdButton(b.button);
+		});
+		createEvent(b.element, "touchend", () => {
 			if (typeof colours[b.button] !== 'undefined' && colours[b.button].up) {
 				b.element.style.backgroundColor = colours[b.button].up;
 			}
@@ -127,11 +152,11 @@ function setupMobileControls() {
 	let toggleLog = () => {
 		logButton.style.backgroundColor = colours.log.up;
 		let logContainer = document.getElementById("game-log-container");
-		// console.log(logContainer);
+		// console.debug(logContainer);
 		logContainer.style.display = logContainer.style.display ? null : "none";
 	};
-	logButton.addEventListener("touchstart", () => { logButton.style.backgroundColor = colours.log.down; });
-	logButton.addEventListener("touchend", toggleLog);
+	createEvent(logButton, "touchstart", () => { logButton.style.backgroundColor = colours.log.down; });
+	createEvent(logButton, "touchend", toggleLog);
 	toggleLog();
 
 	let dpad = document.getElementById("sky-remote-dpad");
@@ -149,7 +174,7 @@ function setupMobileControls() {
 			deadZone = .2;
 		if (Math.abs(x) < deadZone) x = 0;
 		if (Math.abs(y) < deadZone) y = 0;
-		//console.log({ x, y });
+		//console.debug({ x, y });
 		if (Math.sign(x) < 0) {
 			SkyRemote.releaseButton("right");
 			SkyRemote.holdButton("left");
@@ -168,9 +193,9 @@ function setupMobileControls() {
 		}
 	}
 
-	dpad.addEventListener("touchstart", touchEvent);
-	dpad.addEventListener("touchmove", touchEvent);
-	dpad.addEventListener("touchend", e => {
+	createEvent(dpad, "touchstart", touchEvent);
+	createEvent(dpad, "touchmove", touchEvent);
+	createEvent(dpad, "touchend", e => {
 		disableDoubleTapZoom();
 		["up", "down", "left", "right"].forEach(d =>
 			SkyRemote.releaseButton(d));
@@ -191,11 +216,34 @@ function disableDoubleTapZoom(e) {
 }
 
 
-window.getQueuedLogs = function () {
+uWindow.getQueuedLogs = function () {
 	console.log(queuedLogs.map(l => l.classList.toString() + ": " + l.innerText).join(``));
 };
 
 
 Object.keys(log).forEach(type => {
-	window.console[type] = logLog.bind(null, type);
+	uWindow.console[type] = logLog.bind(null, type);
 });
+
+
+
+function touchstart(e) {
+	uWindow.removeEventListener("touchstart", touchstart);
+	if (typeof cancelBind !== 'undefined') cancelBind();
+	document.querySelectorAll('p').forEach(p => p.remove());
+	document.body.appendChild(createSkyRemoteContainer());
+	setupMobileControls();
+}
+
+
+function setupTouchEvents() {
+	createEvent(uWindow, "touchstart", touchstart);
+}
+
+function removeTouchEvents() {
+	let mobileEvent;
+	do {
+		mobileEvent = mobileEvents.pop();
+		mobileEvent.element.removeEventListener(mobileEvent.type, mobileEvent.callback);
+	} while (!!mobileEvents.length);
+}

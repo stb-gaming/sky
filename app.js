@@ -35,8 +35,13 @@ async function setAppUrl(url) {
 	};
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
 	setAppUrl(urlParams.get("url") || "https://denki.co.uk" + location.pathname);
+
+	setupTouchEvents();
+	addGamepadEvents();
+	addKeyboardEvents();
+	connectToGame();
 });
 
 
