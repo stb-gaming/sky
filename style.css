@@ -129,7 +129,8 @@ canvas {
 
 #sky-remote,
 #sky-remote>* {
-	-webkit-user-select: none; //Safari???
+	-webkit-user-select: none;
+	/* Safari? */
 	user-select: none;
 }
 
@@ -363,7 +364,13 @@ canvas {
 	}
 }
 
-#spinner {
+@media (orientation: landscape) {
+	#sky-remote-log {
+		background-color: red;
+	}
+}
+
+a #spinner {
 	display: none;
 }
 

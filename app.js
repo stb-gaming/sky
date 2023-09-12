@@ -1,10 +1,9 @@
-const urlParams = new URLSearchParams(location.search), 
+const urlParams = new URLSearchParams(location.search),
 	gameEvents = {};
 
 function toCORS(url) {
-	return 'https://corsproxy.io/?' + encodeURIComponent(url); (edited);
+	return 'https://corsproxy.io/?' + encodeURIComponent(url);
 }
-
 
 
 async function setAppUrl(url) {
