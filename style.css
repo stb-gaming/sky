@@ -104,6 +104,8 @@ canvas {
 	width: 100%;
 	height: auto;
 	object-fit: contain;
+}
+:not([data-fullscreen="true"])> canvas {
 	max-height: calc(100vh - 270px);
 }
 
