@@ -1,5 +1,23 @@
 (function () {
 	"use strict";
+
+	const addEvt = window.addEventListener,gameEvents = {}
+
+	window.addEventListener = function (...args) {
+		const eventTypes = ["keydown", "keyup"];
+
+		if (eventTypes.includes(args[0])) {
+			if (!gameEvents.hasOwnProperty(args[0])) {
+
+				console.log(...args);
+				gameEvents[args[0]] = args[1];
+			}
+		} else {
+			addEvt(...args);
+		}
+	};
+
+
 	const canvas = document.getElementsByTagName("canvas")[0],
 		context = canvas.getContext("2d"),
 		GAME_STATES={
@@ -65,9 +83,6 @@
 		} while (underSnake(star.pos[0],star.pos[1]));
 	}
 
-	window.placeStar = placeStar;
-	window.star = star;
-	console.log(playingArea); 
 
 	function renderStar() {
 		context.fillStyle = "orange";
@@ -162,5 +177,10 @@
 	});
 
 	loop();
+
+	setupTouchEvents();
+	addGamepadEvents();
+	addKeyboardEvents();
+	connectToGame();
 
 })();
