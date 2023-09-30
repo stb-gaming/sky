@@ -90,6 +90,7 @@ function getInput(device) {
 }
 
 function keyboardCollector(e) {
+	e.preventDefault();
 	collectInput("Keyboard", e.code, e.type == "keydown");
 }
 
