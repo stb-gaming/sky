@@ -14,10 +14,11 @@ const devices = {},
 	doublePress = 100,
 	inputCallbacks = [],
 	newDeviceQueue = [];
-	buttons=["select", "backup", "up", "down", "left", "right", "red", "green", "yellow", "blue", "help"];
+buttons = ["select", "backup", "up", "down", "left", "right", "red", "green", "yellow", "blue", "help"];
 let gamepadAnimationFrame = null,
 	lastGamepads = [],
-	lastInput = null;
+	lastInput = null,
+	midiAccess = null;
 
 
 function getTime() {
@@ -184,6 +185,59 @@ function addGamepadEvents() {
 	window.addEventListener("gamepadconnected", gamepadConnection);
 }
 
+
+async function setupMidi() {
+	if (midiAccess) return;
+	if (navigator.requestMIDIAccess) {
+		try {
+			midiAccess = await navigator.requestMIDIAccess();
+
+		} catch (error) {
+			alert("You have succesfully become indecisive about using MIDI.")
+			console.error(error)
+			return;
+		}
+		console.debug("MIDI has been enabled")
+		const inputs = midiAccess.inputs.values();
+		for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
+			input.value.onmidimessage = message => {
+				onMidiInput(message, input.value);
+			}
+		}
+	} else {
+		alert("Your browser does not support MIDI")
+	}
+
+}
+function midiToNote(midiId) {
+	const notesArray = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+	
+	const octave = Math.floor(midiId / 12) - 1;
+	const noteIndex = midiId % 12;
+	
+	const noteName = notesArray[noteIndex] + octave;
+	
+	return noteName;
+  }
+
+function onMidiInput(message, inputDevice) {
+	if(message.data.length>1){
+		const noteid = +message.data[1];
+		collectInput(inputDevice.name,midiToNote(noteid)||"Note"+noteid,message.data[2])
+	}
+}
+
+function cleanUpMidi() {
+	if (!midiAccess) return;
+	const inputs = midiAccess.inputs.values();
+	for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
+		input.value.onmidimessage = null;
+	}
+	midiAccess = null;
+}
+
+
+
 function popupExists() {
 	return !!document.querySelector('.bind-popup');
 }
@@ -290,8 +344,8 @@ async function bindAll() {
 	}
 
 	deletePopup();
-		updateDeviceDropdown()
-		updateBindSettings();
+	updateDeviceDropdown()
+	updateBindSettings();
 }
 
 function cancelBind() {
@@ -342,19 +396,19 @@ function connectToGame() {
 
 
 function uniq(a) {
-    var prims = {"boolean":{}, "number":{}, "string":{}}, objs = [];
+	var prims = { "boolean": {}, "number": {}, "string": {} }, objs = [];
 
-    return a.filter(function(item) {
-        var type = typeof item;
-        if(type in prims)
-            return prims[type].hasOwnProperty(item) ? false : (prims[type][item] = true);
-        else
-            return objs.indexOf(item) >= 0 ? false : objs.push(item);
-    });
+	return a.filter(function (item) {
+		var type = typeof item;
+		if (type in prims)
+			return prims[type].hasOwnProperty(item) ? false : (prims[type][item] = true);
+		else
+			return objs.indexOf(item) >= 0 ? false : objs.push(item);
+	});
 }
 
 // Settuings update functions
-function getSettingDropdown(){
+function getSettingDropdown() {
 	return document.getElementById("settings-controller")
 }
 
@@ -365,16 +419,16 @@ function getSelectedDevice() {
 
 function getDevices() {
 	return uniq([
-			...Object.keys(devices),
-			...Object.values(bindings).reduce((arr,val)=>[...arr,...Object.keys(val)],[])
-		])
+		...Object.keys(devices),
+		...Object.values(bindings).reduce((arr, val) => [...arr, ...Object.keys(val)], [])
+	])
 }
 
 function updateDeviceDropdown() {
 	const dropdown = getSettingDropdown();
-	if(!dropdown) return;
+	if (!dropdown) return;
 	dropdown.innerHTML = "";
-	dropdown.append(...getDevices().map(device=>{
+	dropdown.append(...getDevices().map(device => {
 		const option = document.createElement("option");
 		option.innerText = option.value = device;
 		return option;
@@ -383,17 +437,17 @@ function updateDeviceDropdown() {
 
 function updateBindSettings() {
 	const device = getSelectedDevice();
-	buttons.forEach(button=>{
-		const element = document.getElementById("setting_"+button);
-		if(!element) return
-		element.value=bindings[button][device].action;
+	buttons.forEach(button => {
+		const element = document.getElementById("setting_" + button);
+		if (!element) return
+		element.value = bindings[button][device].action;
 	})
 }
 
 function initSettings() {
 	const deviceBinds = document.getElementById("device_binds");
 
-	getSettingDropdown().addEventListener("input",updateBindSettings)
+	getSettingDropdown().addEventListener("input", updateBindSettings)
 
 	buttons.forEach((button) => {
 		const divElement = document.createElement("div");
@@ -409,7 +463,7 @@ function initSettings() {
 
 		const buttonElement = document.createElement("button");
 		buttonElement.textContent = "Bind";
-		buttonElement.onclick = async() => {
+		buttonElement.onclick = async () => {
 			await bindInput(getSelectedDevice(), button.toLowerCase());
 			deletePopup();
 			inputElement.value = bindings[button][getSelectedDevice()].action
@@ -423,11 +477,19 @@ function initSettings() {
 		// Append the div to the device binds
 		deviceBinds.appendChild(divElement);
 	});
-	
+
 }
 
 function createSettings() {
-	if(document.querySelectorAll(".settings-panel").length) return
+	if (document.querySelectorAll(".settings-panel").length) return
+
+
+	const midiButton = document.createElement("button");
+	midiButton.textContent = "Enable MIDI";
+	midiButton.onclick = () => {
+		setupMidi();
+	}
+
 
 	// Create the settings panel div
 	const settingsPanel = document.createElement("div");
@@ -457,7 +519,7 @@ function createSettings() {
 	// Create the refresh button
 	const refreshButton = document.createElement("button");
 	refreshButton.textContent = "🔄";
-	refreshButton.onclick = ()=>{
+	refreshButton.onclick = () => {
 		updateDeviceDropdown()
 		updateBindSettings();
 	};
@@ -466,6 +528,7 @@ function createSettings() {
 	deviceDiv.appendChild(deviceLabel);
 	deviceDiv.appendChild(deviceSelect);
 	deviceDiv.appendChild(refreshButton);
+	deviceDiv.appendChild(midiButton);
 
 	// Create the device binds div
 	const deviceBindsDiv = document.createElement("div");
@@ -487,6 +550,7 @@ function createSettings() {
 
 	// Append everything to the settings panel
 	settingsPanel.appendChild(heading);
+	// settingsPanel.appendChild(midiButton);
 	settingsPanel.appendChild(settingsContent);
 	settingsPanel.appendChild(closeButton);
 
@@ -500,6 +564,6 @@ function createSettings() {
 	updateBindSettings();
 }
 
-window.addEventListener("load",() =>{
+window.addEventListener("load", () => {
 
 })
