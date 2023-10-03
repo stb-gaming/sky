@@ -199,7 +199,7 @@ async function setupMidi() {
 	if (midiAccess) return;
 	if (navigator.requestMIDIAccess) {
 		try {
-			midiAccess = await navigator.requestMIDIAccess();
+			midiAccess = await navigator.requestMIDIAccess({sysex:true,software:true});
 
 		} catch (error) {
 			alert("You have succesfully become indecisive about using MIDI.")
