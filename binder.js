@@ -290,6 +290,8 @@ async function bindAll() {
 	}
 
 	deletePopup();
+		updateDeviceDropdown()
+		updateBindSettings();
 }
 
 function cancelBind() {
@@ -370,6 +372,7 @@ function getDevices() {
 
 function updateDeviceDropdown() {
 	const dropdown = getSettingDropdown();
+	if(!dropdown) return;
 	dropdown.innerHTML = "";
 	dropdown.append(...getDevices().map(device=>{
 		const option = document.createElement("option");
@@ -382,6 +385,7 @@ function updateBindSettings() {
 	const device = getSelectedDevice();
 	buttons.forEach(button=>{
 		const element = document.getElementById("setting_"+button);
+		if(!element) return
 		element.value=bindings[button][device].action;
 	})
 }
@@ -453,7 +457,10 @@ function createSettings() {
 	// Create the refresh button
 	const refreshButton = document.createElement("button");
 	refreshButton.textContent = "🔄";
-	refreshButton.onclick = updateDeviceDropdown;
+	refreshButton.onclick = ()=>{
+		updateDeviceDropdown()
+		updateBindSettings();
+	};
 
 	// Append everything for device to its div
 	deviceDiv.appendChild(deviceLabel);
