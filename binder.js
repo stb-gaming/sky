@@ -14,6 +14,7 @@ const devices = {},
 	doublePress = 100,
 	inputCallbacks = [],
 	newDeviceQueue = [];
+	buttons=["select", "backup", "up", "down", "left", "right", "red", "green", "yellow", "blue", "help"];
 let gamepadAnimationFrame = null,
 	lastGamepads = [],
 	lastInput = null;
@@ -278,10 +279,11 @@ async function bindInput(device, button) {
 
 }
 
+
 async function bindAll() {
 	while (newDeviceQueue.length) {
 		const device = newDeviceQueue.shift();
-		for (const button of ["select", "backup", "up", "down", "left", "right", "red", "green", "yellow", "blue", "help"]) {
+		for (const button of buttons) {
 			await bindInput(device, button);
 		}
 		localStorage.setItem("stb_bindings", JSON.stringify(bindings));
@@ -335,3 +337,162 @@ function connectToGame() {
 		}
 	});
 }
+
+
+function uniq(a) {
+    var prims = {"boolean":{}, "number":{}, "string":{}}, objs = [];
+
+    return a.filter(function(item) {
+        var type = typeof item;
+        if(type in prims)
+            return prims[type].hasOwnProperty(item) ? false : (prims[type][item] = true);
+        else
+            return objs.indexOf(item) >= 0 ? false : objs.push(item);
+    });
+}
+
+// Settuings update functions
+function getSettingDropdown(){
+	return document.getElementById("settings-controller")
+}
+
+function getSelectedDevice() {
+	return getSettingDropdown().value
+}
+
+
+function getDevices() {
+	return uniq([
+			...Object.keys(devices),
+			...Object.values(bindings).reduce((arr,val)=>[...arr,...Object.keys(val)],[])
+		])
+}
+
+function updateDeviceDropdown() {
+	const dropdown = getSettingDropdown();
+	dropdown.innerHTML = "";
+	dropdown.append(...getDevices().map(device=>{
+		const option = document.createElement("option");
+		option.innerText = option.value = device;
+		return option;
+	}))
+}
+
+function updateBindSettings() {
+	const device = getSelectedDevice();
+	buttons.forEach(button=>{
+		const element = document.getElementById("setting_"+button);
+		element.value=bindings[button][device].action;
+	})
+}
+
+function initSettings() {
+	const deviceBinds = document.getElementById("device_binds");
+
+	getSettingDropdown().addEventListener("input",updateBindSettings)
+
+	buttons.forEach((button) => {
+		const divElement = document.createElement("div");
+
+		const labelElement = document.createElement("label");
+		labelElement.for = `setting_${button.toLowerCase()}`;
+		labelElement.textContent = `${button}: `;
+
+		const inputElement = document.createElement("input");
+		inputElement.id = `setting_${button.toLowerCase()}`;
+		inputElement.name = `setting_${button.toLowerCase()}`;
+		inputElement.disabled = true;
+
+		const buttonElement = document.createElement("button");
+		buttonElement.textContent = "Bind";
+		buttonElement.onclick = async() => {
+			await bindInput(getSelectedDevice(), button.toLowerCase());
+			deletePopup();
+			inputElement.value = bindings[button][getSelectedDevice()].action
+		}
+
+		// Append everything to the div
+		divElement.appendChild(labelElement);
+		divElement.appendChild(inputElement);
+		divElement.appendChild(buttonElement);
+
+		// Append the div to the device binds
+		deviceBinds.appendChild(divElement);
+	});
+	
+}
+
+function createSettings() {
+	if(document.querySelectorAll(".settings-panel").length) return
+
+	// Create the settings panel div
+	const settingsPanel = document.createElement("div");
+	settingsPanel.classList.add("settings-panel");
+
+	// Create the heading
+	const heading = document.createElement("h1");
+	heading.textContent = "Settings";
+
+	// Create the settings content div
+	const settingsContent = document.createElement("div");
+	settingsContent.classList.add("settings-content");
+
+	// Create the device selection div
+	const deviceDiv = document.createElement("div");
+
+	// Create the label for device
+	const deviceLabel = document.createElement("label");
+	deviceLabel.for = "setting-controller";
+	deviceLabel.textContent = "Device: ";
+
+	// Create the select element for device
+	const deviceSelect = document.createElement("select");
+	deviceSelect.name = "setting-controller";
+	deviceSelect.id = "settings-controller";
+
+	// Create the refresh button
+	const refreshButton = document.createElement("button");
+	refreshButton.textContent = "🔄";
+	refreshButton.onclick = updateDeviceDropdown;
+
+	// Append everything for device to its div
+	deviceDiv.appendChild(deviceLabel);
+	deviceDiv.appendChild(deviceSelect);
+	deviceDiv.appendChild(refreshButton);
+
+	// Create the device binds div
+	const deviceBindsDiv = document.createElement("div");
+	deviceBindsDiv.id = "device_binds";
+
+	// Append everything to the settings content div
+	settingsContent.appendChild(deviceDiv);
+	settingsContent.appendChild(deviceBindsDiv);
+
+
+
+	const closeButton = document.createElement("button");
+	closeButton.textContent = "Done";
+	closeButton.onclick = () => {
+		settingsPanel.remove()
+	}
+
+
+
+	// Append everything to the settings panel
+	settingsPanel.appendChild(heading);
+	settingsPanel.appendChild(settingsContent);
+	settingsPanel.appendChild(closeButton);
+
+
+
+	document.body.appendChild(settingsPanel)
+
+
+	initSettings();
+	updateDeviceDropdown()
+	updateBindSettings();
+}
+
+window.addEventListener("load",() =>{
+
+})
