@@ -121,33 +121,42 @@ function gamepadLoop() {
 	//  TODO: check for differences in buttons and axis and cal the oninput event accordingly
 
 	for (const gid in gamepads) {
-		if (!gamepads[gid] || !lastGamepads[gid]) continue;
-		const gamepad = gamepads[gid], lastGamepad = lastGamepads[gid];
-		if (!gamepad.buttons) {
+		if (!gamepads[gid]) continue;
+		const gamepad = gamepads[gid], lastGamepad = lastGamepads[gid]||{}
+		if (gamepad.buttons) {
+			//console.debug("Gamepad has buttons");
+			lastGamepad.buttons = lastGamepad.buttons||[]
+		}else{
 			console.warn("Gamepad has no buttons");
 		}
 		for (const bid in gamepad.buttons) {
-			const button = gamepad.buttons[bid], lastButton = lastGamepad.buttons[bid];
-			if (button && lastButton && lastButton.pressed !== button.pressed) {
+			const button = gamepad.buttons[bid], lastButton = lastGamepad.buttons[bid]||false;
+			console.log(lastButton, button.pressed);
+			if (button && lastButton !== button.pressed) {
 				collectInput(gamepad.id, "Button" + bid, button.pressed);
+				lastGamepad.buttons[bid] = button.pressed;
 			}
 		}
-		if (!gamepad.axes) {
-			console.warn("Gamepad has no buttons");
+		if (gamepad.axes) {
+			//console.debug("Gamepad has axes");
+			lastGamepad.axes = lastGamepad.axes||[]
+		}else{
+			console.warn("Gamepad has no axes");
 		}
 		for (const aid in gamepad.axes) {
-			const axis = gamepad.axes[aid], lastAxis = lastGamepad.axes[aid];
-			if (lastAxis !== axis) {
+			const axis = gamepad.axes[aid], lastAxis = lastGamepad.axes[aid]||0;
+			if (lastAxis !== axis&& Math.abs(axis)>.25) {
 				//TODO collect multiple axis
 				collectInput(gamepad.id, "Axis" + aid, axis);
+				lastGamepad.axes[aid] = axis;
 			}
 		}
-
+		lastGamepads[gid] = lastGamepad
 	}
 
-	lastGamepads = gamepads;
+	//lastGamepads = gamepads;
 
-	startGamepadLoop();
+	gamepadAnimationFrame = requestAnimationFrame(gamepadLoop);
 }
 function startGamepadLoop() {
 	gamepadAnimationFrame = requestAnimationFrame(gamepadLoop);
@@ -360,7 +369,7 @@ function getButtonsFromInput(input) {
 		const btnBindings = bindings[skyButton];
 		if (!btnBindings.hasOwnProperty(input.device)) continue;
 		const binding = btnBindings[input.device];
-		console.debug({ skyButton, binding, input });
+		//console.debug({ skyButton, binding, input });
 		if ((binding.action || binding.actions[0]) === input.action && binding.times == input.times) {
 			if (!input.value) {
 				boundButtons.push({ button: skyButton, value: !!input.value });
@@ -439,7 +448,7 @@ function updateBindSettings() {
 	const device = getSelectedDevice();
 	buttons.forEach(button => {
 		const element = document.getElementById("setting_" + button);
-		if (!element) return
+		if (!element||!bindings[button]||!bindings[button][device]) return
 		element.value = bindings[button][device].action;
 	})
 }
@@ -466,6 +475,7 @@ function initSettings() {
 		buttonElement.onclick = async () => {
 			await bindInput(getSelectedDevice(), button.toLowerCase());
 			deletePopup();
+			localStorage.setItem("stb_bindings", JSON.stringify(bindings));
 			inputElement.value = bindings[button][getSelectedDevice()].action
 		}
 
