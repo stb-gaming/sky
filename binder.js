@@ -3,10 +3,12 @@
  * addGamepadEvents()
  * addKeybaordEvents()
  * connectToGame()
+ * setupMidi()
  *
  * React useEffect return
  * removeGamepadEvents()
  * removeKeyboardEvents()
+ * cleanUpMidi()
  */
 
 const devices = {},
