@@ -188,6 +188,7 @@ function popupExists() {
 }
 
 
+
 function createPopup(device, button) {
 	if (popupExists()) {
 		editPrompt(`Press a key to bind ${button}...`);

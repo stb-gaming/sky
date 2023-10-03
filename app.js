@@ -1,8 +1,13 @@
 const urlParams = new URLSearchParams(location.search),
 	gameEvents = {};
+let gameUrl;
 
 function toCORS(url) {
 	return 'https://corsproxy.io/?' + encodeURIComponent(url);
+}
+
+function toDenki() {
+	location.href = gameUrl;
 }
 
 
@@ -36,7 +41,10 @@ async function setAppUrl(url) {
 }
 
 window.addEventListener("load", () => {
-	setAppUrl(urlParams.get("url") || "https://denki.co.uk" + location.pathname);
+	let pathname = location.pathname;
+	if(!pathname.startsWith("/sky")) pathname = "/sky"+location.pathname
+		gameUrl = urlParams.get("url") || "https://denki.co.uk" + pathname;
+	setAppUrl(gameUrl);
 
 	setupTouchEvents();
 	addGamepadEvents();
