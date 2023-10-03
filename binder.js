@@ -202,7 +202,7 @@ async function setupMidi() {
 			midiAccess = await navigator.requestMIDIAccess({sysex:false,software:true});
 
 		} catch (error) {
-			alert("You have succesfully become indecisive about using MIDI.")
+			alert("You may not play the game using midi inputs then.")
 			console.error(error)
 			return;
 		}
