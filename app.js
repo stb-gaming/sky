@@ -49,6 +49,7 @@ window.addEventListener("load", () => {
 	setupTouchEvents();
 	addGamepadEvents();
 	addKeyboardEvents();
+	setupMidi();
 	connectToGame();
 });
 

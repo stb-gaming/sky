@@ -494,12 +494,6 @@ function createSettings() {
 	if (document.querySelectorAll(".settings-panel").length) return
 
 
-	const midiButton = document.createElement("button");
-	midiButton.textContent = "Enable MIDI";
-	midiButton.onclick = () => {
-		setupMidi();
-	}
-
 
 	// Create the settings panel div
 	const settingsPanel = document.createElement("div");
@@ -538,7 +532,6 @@ function createSettings() {
 	deviceDiv.appendChild(deviceLabel);
 	deviceDiv.appendChild(deviceSelect);
 	deviceDiv.appendChild(refreshButton);
-	deviceDiv.appendChild(midiButton);
 
 	// Create the device binds div
 	const deviceBindsDiv = document.createElement("div");
