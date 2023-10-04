@@ -215,8 +215,6 @@ async function setupMidi() {
 				onMidiInput(message, input.value);
 			}
 		}
-	} else {
-		alert("Your browser does not support MIDI")
 	}
 
 }
