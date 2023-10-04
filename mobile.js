@@ -232,6 +232,13 @@ function touchstart(e) {
 	if (typeof cancelBind !== 'undefined') cancelBind();
 	document.querySelectorAll('p').forEach(p => p.remove());
 	document.body.appendChild(createSkyRemoteContainer());
+
+	const fullscreenButton = document.getElementById("fullscreen_button");
+	if(fullscreenButton) {
+		fullscreenButton.remove()
+		if(document.fullscreenElement) toggleFullscreen();
+	}
+
 	setupMobileControls();
 }
 
