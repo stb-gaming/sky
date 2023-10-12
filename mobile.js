@@ -71,7 +71,7 @@ let lastTouchEnd = 0,
 function logLog(type, ...args) {
 	const error = new Error();
 	const stackTrace = error.stack.split("\n")[2].trim();
-	const [_, fileName, lineNumber] = /([^/]+):(\d+):\d+/g.exec(stackTrace);
+	const [_, fileName, lineNumber] = /([^\/]+):(\d+):\d+/g.exec(stackTrace);
 
 	log[type](...args);
 	let logLine = document.createElement("span");
