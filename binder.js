@@ -473,9 +473,13 @@ function initSettings() {
 		const buttonElement = document.createElement("button");
 		buttonElement.textContent = "Bind";
 		buttonElement.onclick = async () => {
+			// Prompt bind pupup
 			await bindInput(getSelectedDevice(), button.toLowerCase());
+			///close the popup
 			deletePopup();
+			// save the new binds to browser storage
 			localStorage.setItem("stb_bindings", JSON.stringify(bindings));
+			// set the textbox text
 			inputElement.value = bindings[button][getSelectedDevice()].action
 		}
 
@@ -494,6 +498,12 @@ function createSettings() {
 	if (document.querySelectorAll(".settings-panel").length) return
 
 
+
+	const midiButton = document.createElement("button");
+	midiButton.textContent = "Enable MIDI";
+	midiButton.onclick = () => {
+		setupMidi();
+	}
 
 	// Create the settings panel div
 	const settingsPanel = document.createElement("div");
@@ -553,7 +563,7 @@ function createSettings() {
 
 	// Append everything to the settings panel
 	settingsPanel.appendChild(heading);
-	// settingsPanel.appendChild(midiButton);
+	settingsPanel.appendChild(midiButton);
 	settingsPanel.appendChild(settingsContent);
 	settingsPanel.appendChild(closeButton);
 
