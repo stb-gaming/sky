@@ -370,7 +370,7 @@ function getButtonsFromInput(input) {
 		if (!btnBindings.hasOwnProperty(input.device)) continue;
 		const binding = btnBindings[input.device];
 		//console.debug({ skyButton, binding, input });
-		if ((binding.action || binding.actions[0]) === input.action && binding.times == input.times) {
+		if ((binding.action || binding.actions[0]) === input.action && binding.times <= input.times) {
 			if (!input.value) {
 				boundButtons.push({ button: skyButton, value: !!input.value });
 			}
