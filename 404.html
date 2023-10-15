@@ -92,6 +92,12 @@
 
 	</style>
 
+<script>
+
+function redirectToHelp() {
+	location.href = "https://github.com/stb-gaming/.github/wiki/portal"
+}
+</script>
 	<script src="https://stb-gaming.github.io/userscripts/sky-remote.user.js"></script>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -112,11 +118,11 @@
 			height="576" style="cursor: default;"></canvas>
 	</div>
 
-	<script src="../mobile.js"></script>
-	<script src="../binder.js"></script>
-	<script src="../fullscreen.js"></script>
+	<script src="../mobile.js" onerror="redirectToHelp()"></script>
+	<script src="../binder.js" onerror="redirectToHelp()"></script>
+	<script src="../fullscreen.js" onerror="redirectToHelp()"></script>
 
-	<script type="text/javascript" src="../app.js"></script>
+	<script type="text/javascript" src="../app.js" onerror="redirectToHelp()"></script>
 
 	<script type="text/javascript">
 		var statusElement = document.getElementById('status');

@@ -41,9 +41,6 @@ async function setAppUrl(url) {
 	};
 }
 
-function redirectToHelp() {
-	location.href = "https://github.com/stb-gaming/.github/wiki/portal"
-}
 
 window.addEventListener("load", () => {
 	let pathname = location.pathname;
