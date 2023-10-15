@@ -20,6 +20,7 @@ async function setAppUrl(url) {
 		response = await fetch(appJS),
 		scriptContent = await response.text(),
 		scriptElement = document.createElement("script");
+
 	scriptElement.textContent = scriptContent.split("app.wasm").join(appWasm).split("app.data").join(appData);
 	document.body.appendChild(scriptElement);
 
@@ -40,11 +41,20 @@ async function setAppUrl(url) {
 	};
 }
 
+function redirectToHelp() {
+	location.href = "https://github.com/stb-gaming/.github/wiki/portal"
+}
+
 window.addEventListener("load", () => {
 	let pathname = location.pathname;
 	if(!pathname.startsWith("/sky")) pathname = "/sky"+location.pathname
 		gameUrl = urlParams.get("url") || "https://denki.co.uk" + pathname;
-	setAppUrl(gameUrl);
+
+	try {
+		setAppUrl(gameUrl);
+	} catch (error) {
+		redirectToHelp();
+	}
 
 	setupTouchEvents();
 	addGamepadEvents();
