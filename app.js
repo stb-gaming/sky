@@ -21,6 +21,8 @@ async function setAppUrl(url) {
 		scriptContent = await response.text(),
 		scriptElement = document.createElement("script");
 
+		if(!response.ok) redirectToHelp();
+
 	scriptElement.textContent = scriptContent.split("app.wasm").join(appWasm).split("app.data").join(appData);
 	document.body.appendChild(scriptElement);
 
