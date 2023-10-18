@@ -19,7 +19,17 @@
 .settings-panel {
 	z-index: 2;
     width: fit-content;
+	display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+
 }
+
+.settings-panel h1 {
+	flex: 1;
+}
+
 
 .bind-popup {
 	z-index: 3;
@@ -79,7 +89,9 @@ canvas {
 }
 .emscripten_border a {
 	position: absolute;
-	background-color: magenta;
+	bottom: 0;
+	right:0;
+	-webkit-text-stroke: 1px black;
 }
 
 body {

@@ -500,10 +500,21 @@ function createSettings() {
 
 
 	const midiButton = document.createElement("button");
-	midiButton.textContent = "Enable MIDI";
+	midiButton.textContent = "🎹";
+	midiButton.classList.add("big","trans")
 	midiButton.onclick = () => {
 		setupMidi();
 	}
+
+
+	// Create the refresh button
+	const refreshButton = document.createElement("button");
+	refreshButton.textContent = "🔄";
+	refreshButton.classList.add("big","trans")
+	refreshButton.onclick = () => {
+		updateDeviceDropdown()
+		updateBindSettings();
+	};
 
 	// Create the settings panel div
 	const settingsPanel = document.createElement("div");
@@ -530,18 +541,10 @@ function createSettings() {
 	deviceSelect.name = "setting-controller";
 	deviceSelect.id = "settings-controller";
 
-	// Create the refresh button
-	const refreshButton = document.createElement("button");
-	refreshButton.textContent = "🔄";
-	refreshButton.onclick = () => {
-		updateDeviceDropdown()
-		updateBindSettings();
-	};
 
 	// Append everything for device to its div
 	deviceDiv.appendChild(deviceLabel);
 	deviceDiv.appendChild(deviceSelect);
-	deviceDiv.appendChild(refreshButton);
 
 	// Create the device binds div
 	const deviceBindsDiv = document.createElement("div");
@@ -564,6 +567,7 @@ function createSettings() {
 	// Append everything to the settings panel
 	settingsPanel.appendChild(heading);
 	settingsPanel.appendChild(midiButton);
+	settingsPanel.appendChild(refreshButton);
 	settingsPanel.appendChild(settingsContent);
 	settingsPanel.appendChild(closeButton);
 
