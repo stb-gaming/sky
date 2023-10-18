@@ -34,7 +34,7 @@ async function setAppUrl(url) {
 		if (eventTypes.includes(args[0])) {
 			if (!gameEvents.hasOwnProperty(args[0])) {
 
-				console.log(...args);
+				console.debug(...args);
 				gameEvents[args[0]] = args[1];
 			}
 		} else {
@@ -58,13 +58,13 @@ window.addEventListener("load", () => {
 	setupTouchEvents();
 	addGamepadEvents();
 	addKeyboardEvents();
-	//setupMidi();
+	setupMidi();
 	connectToGame();
 });
 
 
 
 SkyRemote.onTriggerEvent((type, options) => {
-	console.log({ type, options });
-	gameEvents[type](new KeyboardEvent(type, options));
+	console.debug({ type, options });
+	if(gameEvents[type])	gameEvents[type](new KeyboardEvent(type, options));
 });

@@ -2,7 +2,6 @@
 // Created by tumble for denki, denki can hold rights to this and even remove this comment
 
 window.addEventListener('message', (event) => {
-	console.log("hello");
 	if (!Array.isArray(event.data) || event.data.length < 2) {
 		// Check if event.data is an array with at least two elements
 		return;

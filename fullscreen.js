@@ -1,7 +1,7 @@
 
 
 function toggleFullscreen(element=document.fullscreenElement) {
-	console.log(element);
+	console.debug(element);
 	if (document.fullscreenElement === element) {
 		document.exitFullscreen();
 		element.setAttribute("data-fullscreen", false);

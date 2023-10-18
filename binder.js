@@ -133,7 +133,7 @@ function gamepadLoop() {
 		}
 		for (const bid in gamepad.buttons) {
 			const button = gamepad.buttons[bid], lastButton = lastGamepad.buttons[bid]||false;
-			console.log(lastButton, button.pressed);
+			console.debug(lastButton, button.pressed);
 			if (button && lastButton !== button.pressed) {
 				collectInput(gamepad.id, "Button" + bid, button.pressed);
 				lastGamepad.buttons[bid] = button.pressed;

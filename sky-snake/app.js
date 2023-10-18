@@ -9,7 +9,7 @@
 		if (eventTypes.includes(args[0])) {
 			if (!gameEvents.hasOwnProperty(args[0])) {
 
-				console.log(...args);
+				console.debug(...args);
 				gameEvents[args[0]] = args[1];
 			}
 		} else {
@@ -97,13 +97,13 @@
 			y = snake.body[i+1];
 			if(snakeX===x&&snakeY===y) {
 				snake.state = GAME_STATES.DEAD
-				console.log("DEAD");
+				console.debug("DEAD");
 				return;
 			}
 		}
 
 		if(snakeX==star.pos[0]&&star.pos[1]==snakeY) {
-			console.log("WIN!");
+			console.debug("WIN!");
 			snake.length++;
 			placeStar();
 		}
@@ -116,7 +116,7 @@
 		switch (snake.state) {
 			case GAME_STATES.ALIVE:
 				if (delta >= 1 / snake.speed) {
-					//console.log(`FPS: ${1 / delta}, DT: ${delta}`);
+					//console.debug(`FPS: ${1 / delta}, DT: ${delta}`);
 					last = now;
 
 					context.fillStyle = "white"
