@@ -448,6 +448,7 @@ function updateBindSettings() {
 	const device = getSelectedDevice();
 	buttons.forEach(button => {
 		const element = document.getElementById("setting_" + button);
+		document.getElementById("setting_" + button + "_bind").disabled = !Object.keys(bindings).length ? "true":null
 		if (!element||!bindings[button]||!bindings[button][device]) return
 		element.value = bindings[button][device].action;
 	})
@@ -455,6 +456,7 @@ function updateBindSettings() {
 
 function initSettings() {
 	const deviceBinds = document.getElementById("device_binds");
+	if(!deviceBinds) return
 
 	getSettingDropdown().addEventListener("input", updateBindSettings)
 
@@ -471,6 +473,7 @@ function initSettings() {
 		inputElement.disabled = true;
 
 		const buttonElement = document.createElement("button");
+		buttonElement.id = `setting_${button.toLowerCase()}_bind`
 		buttonElement.textContent = "Bind";
 		buttonElement.onclick = async () => {
 			// Prompt bind pupup
@@ -498,24 +501,6 @@ function createSettings() {
 	if (document.querySelectorAll(".settings-panel").length) return
 
 
-
-	const midiButton = document.createElement("button");
-	midiButton.textContent = "🎹";
-	midiButton.classList.add("big","trans")
-	midiButton.onclick = () => {
-		setupMidi();
-	}
-
-
-	// Create the refresh button
-	const refreshButton = document.createElement("button");
-	refreshButton.textContent = "🔄";
-	refreshButton.classList.add("big","trans")
-	refreshButton.onclick = () => {
-		updateDeviceDropdown()
-		updateBindSettings();
-	};
-
 	// Create the settings panel div
 	const settingsPanel = document.createElement("div");
 	settingsPanel.classList.add("settings-panel");
@@ -523,6 +508,42 @@ function createSettings() {
 	// Create the heading
 	const heading = document.createElement("h1");
 	heading.textContent = "Settings";
+
+	//Create Toolbar
+	const toolbar = document.createElement("div");
+	toolbar.classList.add("settings-toolbar")
+
+	//Midi Button
+	const midiButton = document.createElement("button");
+	midiButton.textContent = "🎹";
+	midiButton.classList.add("big","trans")
+	midiButton.dataset.balloon = "Enable MIDI"
+	midiButton.onclick = () => {
+		setupMidi();
+	}
+
+	// Create the refresh button
+	const refreshButton = document.createElement("button");
+	refreshButton.textContent = "🔄";
+	refreshButton.classList.add("big","trans")
+	refreshButton.dataset.balloon = "Refresh"
+	refreshButton.onclick = () => {
+		updateDeviceDropdown()
+		updateBindSettings();
+	};
+
+	//Close Button
+	const closeButton = document.createElement("button");
+	closeButton.textContent = "❌";
+	closeButton.dataset.balloon = "Close"
+	closeButton.classList.add("big","trans")
+	closeButton.onclick = () => {
+		settingsPanel.remove()
+	}
+
+	toolbar.appendChild(midiButton);
+	toolbar.appendChild(refreshButton);
+	toolbar.appendChild(closeButton);
 
 	// Create the settings content div
 	const settingsContent = document.createElement("div");
@@ -554,27 +575,21 @@ function createSettings() {
 	settingsContent.appendChild(deviceDiv);
 	settingsContent.appendChild(deviceBindsDiv);
 
+	// Info Text
+	let info = document.createElement("p")
+	info.classList.add("settings-info");
+	info.innerText = `Changes are saved to the browser automatically, one binding per device and all keyboards are treated as one.
 
-
-	const closeButton = document.createElement("button");
-	closeButton.textContent = "Done";
-	closeButton.onclick = () => {
-		settingsPanel.remove()
-	}
-
+	If the device you're looking for isn't listed, please press a button on that device and it should be detected.`
 
 
 	// Append everything to the settings panel
 	settingsPanel.appendChild(heading);
-	settingsPanel.appendChild(midiButton);
-	settingsPanel.appendChild(refreshButton);
+	settingsPanel.appendChild(toolbar);
+	settingsPanel.appendChild(info);
 	settingsPanel.appendChild(settingsContent);
-	settingsPanel.appendChild(closeButton);
-
-
 
 	document.body.appendChild(settingsPanel)
-
 
 	initSettings();
 	updateDeviceDropdown()

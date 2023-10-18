@@ -114,9 +114,16 @@ function redirectToHelp() {
 		<progress value="0" max="1" id="progress" hidden=""></progress>
 	</div>
 	<div class="emscripten_border">
-		<a id="fullscreen_button" class="btn big trans" href="javascript:toggleFullscreen(document.querySelector('.emscripten_border'))">⛶</a>
 		<canvas class="emscripten" id="canvas" tabindex="-1" width="720"
 			height="576" style="cursor: default;"></canvas>
+		<div class="toolbar">
+			<a id="denki_button" href="javascript:toDenki()" class="btn big trans" data-balloon="Back To Denki">💡</a>
+			<a data-balloon="High Scores"href="https://stb-gaming.github.io/high-scores/" class="btn big trans" >🔢</a>
+			<a data-balloon="Help" id="help_button" href="javascript:SkyRemote.pressButton('help')" class="btn big trans" >❓</a>
+			<a href="javascript:createSettings()" class="btn big trans" data-balloon="Controls">🎮</a>
+			<a href="https://discord.gg/qSB8nYDfBt" class="btn big trans" data-balloon="Discord">💬</a>
+			<a data-balloon="Fullscreen" id="fullscreen_button" class="btn big trans" href="javascript:toggleFullscreen(document.querySelector('.emscripten_border'))">⛶</a>
+		</div>
 	</div>
 
 	<script src="../mobile.js" onerror="redirectToHelp()"></script>
@@ -201,12 +208,12 @@ function redirectToHelp() {
 			};
 		};
 	</script>
-<p style="text-align:center;padding: 0px; margin: 0px;"><a href="javascript:createSettings()"><img src="../NewControls.png"></a><a href="https://stb-gaming.github.io/high-scores/"><img src="https://denki.co.uk/sky/HighScore.png"></a></p>
+<!-- <p style="text-align:center;padding: 0px; margin: 0px;"><a href="javascript:createSettings()"><img src="../NewControls.png"></a><a href="https://stb-gaming.github.io/high-scores/"><img src="https://denki.co.uk/sky/HighScore.png"></a></p>
 	<p style="text-align:center;padding: 0px; margin: 0px;display: flex;
     justify-content: center;align-items: center;"><a
 			href="javascript:toDenki()"><img
 				src="../Games.png"></a><a href="https://discord.gg/qSB8nYDfBt"><img
-				src="https://denki.co.uk/sky/Discord.png"></a></p>
+				src="https://denki.co.uk/sky/Discord.png"></a></p> -->
 </body>
 
 </html>

@@ -12,6 +12,7 @@ const colours = {
 }, mobileEvents = [];
 
 function createSkyRemoteContainer() {
+	const toolbar = document.getElementsByClassName("toolbar")[0]
 	// Create the main container
 	const skyRemoteContainer = document.createElement("span");
 	skyRemoteContainer.id = "sky-remote-container";
@@ -45,6 +46,16 @@ function createSkyRemoteContainer() {
 	// Create additional buttons
 	const additionalButtons = ["backup", "help", "log", "select"];
 	additionalButtons.forEach((label) => {
+		if(label=="log" && toolbar) {
+			let logBtn = document.createElement("a")
+			logBtn.classList.add("btn","big","trans")
+			logBtn.innerText = "🖥️"
+			logBtn.dataset.balloon = "Error Log"
+			logBtn.href = "javascript:toggleLog()"
+			toolbar.appendChild(logBtn);
+			return
+		}
+		if(label=="help"&&toolbar) return
 		const button = document.createElement("div");
 		button.id = `sky-remote-${label.replace(/\s+/g, "-").toLowerCase()}`;
 		const span = document.createElement("span");
@@ -64,24 +75,28 @@ function createSkyRemoteContainer() {
 
 let lastTouchEnd = 0,
 	log = (function () {
-		let { log, info, warn, error } = uWindow.console;
-		return { log, info, warn, error };
+		let { log, info, warn, error,debug } = uWindow.console;
+		return { log, info, warn, error,debug };
 	})(),
 	queuedLogs = [];
 function logLog(type, ...args) {
 	const error = new Error();
 	const stackTrace = error.stack.split("\n")[2].trim();
-	const [_, fileName, lineNumber] = /([^\/]+):(\d+):\d+/g.exec(stackTrace);
 
 	log[type](...args);
+	if(type=="debug") return
 	let logLine = document.createElement("span");
 	logLine.classList.add(type);
 	let logText = document.createElement("p");
 	logText.innerText = args.join(" ");
 	logLine.appendChild(logText);
-	let logLoc = document.createElement("span");
-	logLoc.innerText = `${fileName}:${lineNumber}`;
-	logLine.appendChild(logLoc);
+
+	if(stackTrace) {
+		[_, fileName, lineNumber] = /([^\/]+):(\d+):\d+/g.exec(stackTrace)
+		let logLoc = document.createElement("span");
+		logLoc.innerText = `${fileName}:${lineNumber}`;
+		logLine.appendChild(logLoc);
+	}
 
 
 
@@ -96,6 +111,12 @@ function logLog(type, ...args) {
 function createEvent(element, type, callback) {
 	mobileEvents.push({ element, type, callback });
 	element.addEventListener(type, callback);
+}
+
+function toggleLog() {
+	let logContainer = document.getElementById("game-log-container");
+	// console.debug(logContainer);
+	logContainer.style.display = logContainer.style.display ? null : "none";
 }
 
 function setupMobileControls() {
@@ -129,6 +150,7 @@ function setupMobileControls() {
 			element: document.getElementById("sky-remote-blue")
 		}
 	].forEach(b => {
+		if(!b.element|| b.element== null) return
 		createEvent(b.element, "touchstart", () => {
 			if (typeof colours[b.button] !== 'undefined' && colours[b.button].down) {
 				b.element.style.backgroundColor = colours[b.button].down;
@@ -149,14 +171,15 @@ function setupMobileControls() {
 		});
 	});
 	const logButton = document.getElementById("sky-remote-log");
-	let toggleLog = () => {
+	if(logButton) {
+	let toggleLogBtn = () => {
 		logButton.style.backgroundColor = colours.log.up;
-		let logContainer = document.getElementById("game-log-container");
-		// console.debug(logContainer);
-		logContainer.style.display = logContainer.style.display ? null : "none";
+		toggleLog();
+		
 	};
 	createEvent(logButton, "touchstart", () => { logButton.style.backgroundColor = colours.log.down; });
-	createEvent(logButton, "touchend", toggleLog);
+	createEvent(logButton, "touchend", toggleLogBtn);
+}
 	toggleLog();
 
 	let dpad = document.getElementById("sky-remote-dpad");
@@ -233,9 +256,14 @@ function touchstart(e) {
 	document.querySelectorAll('p').forEach(p => p.remove());
 	document.body.appendChild(createSkyRemoteContainer());
 
-	const fullscreenButton = document.getElementById("fullscreen_button");
-	if(fullscreenButton) {
-		fullscreenButton.remove()
+	const remove = [
+		document.getElementById("fullscreen_button"),
+		document.getElementById("denki_button"),
+		//document.getElementById("help_button")
+	]
+
+	if(remove.length) {
+		remove.forEach(r=>r.remove());
 		if(document.fullscreenElement) toggleFullscreen();
 	}
 
