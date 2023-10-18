@@ -24,7 +24,7 @@ body {
 	/* height: auto; */
 	height: fit-content;
 	max-height: 100vh;
-	overflow-y: scroll;
+	/* overflow-y: scroll; */
 }
 .settings-panel {
 	z-index: 2;
@@ -168,7 +168,7 @@ canvas {
 	max-height: 100vh;
 }
 :not([data-fullscreen="true"])> canvas {
-	max-height: calc(100vh - 270px);
+	max-height: calc(100vh - 330px);
 } 
 
 #sky-remote-container {
@@ -388,7 +388,7 @@ canvas {
 
 	.toolbar {
 		width: 100%;
-		justify-content: space-between;
+		justify-content: space-around;
 	}
 
 
@@ -443,6 +443,12 @@ canvas {
 		width: calc(100vw - 1.3rem * 2 - 2 * 200px);
 	}
 
+	.toolbar {
+		position: absolute;
+	bottom: 0;
+	right:0;
+	}
+
 
 	canvas.emscripten {
 		height: calc(100vh - 1.3rem * 2);
@@ -452,6 +458,20 @@ canvas {
 		margin-bottom: auto;
 		max-height: none;
 	}
+
+	#sky-remote-backup {
+		top: unset;
+    right: unset;
+    left: 82px;
+    bottom: -39px;
+	}
+	#sky-remote-help {
+		top: unset;
+    right: unset;
+    left: 82px;
+	bottom: -81px;
+	}
+
 
 	@media (max-width: 440px) {
 

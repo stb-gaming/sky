@@ -55,7 +55,7 @@ function createSkyRemoteContainer() {
 			toolbar.appendChild(logBtn);
 			return
 		}
-		if(label=="help"&&toolbar) return
+		//if(label=="help"&&toolbar) return
 		const button = document.createElement("div");
 		button.id = `sky-remote-${label.replace(/\s+/g, "-").toLowerCase()}`;
 		const span = document.createElement("span");
@@ -258,8 +258,9 @@ function touchstart(e) {
 
 	const remove = [
 		document.getElementById("fullscreen_button"),
-		document.getElementById("denki_button"),
-		//document.getElementById("help_button")
+		//document.getElementById("denki_button"),
+		//document.getElementById("controls_button"),
+		document.getElementById("help_button")
 	]
 
 	if(remove.length) {
