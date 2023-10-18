@@ -25,6 +25,9 @@
   justify-content: flex-end;
 
 }
+.settings-content {
+	flex-basis: 100%;
+}
 
 .settings-panel h1 {
 	flex: 1;
