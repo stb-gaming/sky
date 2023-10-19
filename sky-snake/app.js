@@ -91,7 +91,7 @@
 		if(snake.state!==GAME_STATES.ALIVE) return;
 		const snakeX = snake.body[0],snakeY = snake.body[1];
 
-		for(let i = 2; i<snake.body.length;i+=2) {
+		for(let i = 4; i<snake.body.length;i+=2) {
 			let x = snake.body[i],
 			y = snake.body[i+1];
 			if(snakeX===x&&snakeY===y) {
