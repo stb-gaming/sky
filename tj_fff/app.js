@@ -1,1 +1,1 @@
-loadSWF("../tj_fff/food_fight.swf")
+loadSWF("../tj_fff/app.swf")
