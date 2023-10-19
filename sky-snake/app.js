@@ -1,21 +1,6 @@
 (function () {
 	"use strict";
 
-	const addEvt = window.addEventListener,gameEvents = {}
-
-	window.addEventListener = function (...args) {
-		const eventTypes = ["keydown", "keyup"];
-
-		if (eventTypes.includes(args[0])) {
-			if (!gameEvents.hasOwnProperty(args[0])) {
-
-				console.debug(...args);
-				gameEvents[args[0]] = args[1];
-			}
-		} else {
-			addEvt(...args);
-		}
-	};
 
 
 	const canvas = document.getElementsByTagName("canvas")[0],
@@ -175,12 +160,8 @@
 				break;
 		}
 	});
-
+	
+	placeStar()
 	loop();
-
-	setupTouchEvents();
-	addGamepadEvents();
-	addKeyboardEvents();
-	connectToGame();
 
 })();
