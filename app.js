@@ -170,7 +170,7 @@ window.addEventListener("load", () => {
 					break;
 			}
 		} catch (error) {
-			//redirectToHelp();
+			redirectToHelp();
 		}
 		setupTouchEvents();
 		addGamepadEvents();
