@@ -510,3 +510,24 @@ body>.emscripten {
 #status {
 	translate: -50% 1em;
 }
+
+
+#gametext {
+	position: absolute;
+	top: calc(30% - 42px);
+	left: calc(50% - 8px);
+	translate: -50% -50%;
+	color: black;
+}
+#gametext.center {
+	top: calc(50% - 42px);
+}
+
+
+#scoretext {
+	position: absolute;
+	top: 0;
+	left: 0;
+	translate: 1% -50%;
+	color: black;
+}
