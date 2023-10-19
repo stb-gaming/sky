@@ -21,6 +21,7 @@
 			state: GAME_STATES.DEMO,
 			body: [],
 			length: 3,
+			lastDir:0,
 			dir: 0,
 			width: 20,
 			speed: 10,
@@ -162,6 +163,7 @@
 						snake.body[1] += snake.dir & 1 ? -1 : 1;
 					else
 						snake.body[0] += snake.dir & 1 ? -1 : 1;
+					snake.lastDir = snake.dir;
 				}
 
 
@@ -174,6 +176,11 @@
 		}
 	}
 
+	function changeDir(dir) {
+		const dirCheck = snake.lastDir >>1;
+		if(dirCheck!==dir>>1) snake.dir = dir
+	}
+
 	function loop() {
 		now = getTime();
 			delta = now - last;
@@ -183,20 +190,16 @@
 				gameText("Press any ARROW key to Start")
 				snakeTick();
 				if(snake.body[0]>star.pos[0]+3) {
-					snake.body[0]--;
-					snake.dir = SNAKE_DIR.DOWN
+					changeDir(SNAKE_DIR.DOWN)
 				}
 				if(snake.body[0]<star.pos[0]-3) {
-					snake.body[0]++;
-					snake.dir = SNAKE_DIR.UP
+					changeDir(SNAKE_DIR.UP)
 				}
 				if(snake.body[1]>star.pos[1]+3) {
-					snake.body[1]--;
-					snake.dir = SNAKE_DIR.LEFT
+					changeDir(SNAKE_DIR.LEFT)
 				}
 				if(snake.body[1]<star.pos[1]-3) {
-					snake.body[1]++;
-					snake.dir = SNAKE_DIR.RIGHT
+					changeDir(SNAKE_DIR.RIGHT)
 				}
 
 				break;
@@ -237,21 +240,18 @@
 		}
 		if(snake.state !== GAME_STATES.ALIVE) return
 
-
-		const dirCheck = snake.dir >>1;
-
 		switch (e.code) {
 			case "ArrowLeft":
-				if(dirCheck!==0)snake.dir = SNAKE_DIR.LEFT;
+				changeDir(SNAKE_DIR.LEFT)
 				break;
 			case "ArrowRight":
-				if(dirCheck!==0)snake.dir = SNAKE_DIR.RIGHT;
+				changeDir(SNAKE_DIR.RIGHT)
 				break;
 			case "ArrowUp":
-				if(dirCheck!==1)snake.dir = SNAKE_DIR.UP
+				changeDir(SNAKE_DIR.UP)
 				break;
 			case "ArrowDown":
-				if(dirCheck!==1)snake.dir = SNAKE_DIR.DOWN;
+				changeDir(SNAKE_DIR.DOWN)
 				break;
 
 			default:
