@@ -200,7 +200,7 @@ window.addEventListener("load", () => {
 
 	
 	const gameUrl = urlParams.get("url") || "https://denki.co.uk" + pathname;
-	result = /\/sky\/([a-zA-Z0-9-]*)\/app\.html/.exec(pathname);
+	result = /\/sky\/([a-zA-Z0-9-_]*)\/app\.html/.exec(pathname);
 
 	if(result && result.length>1) gameid = result[1]
 
