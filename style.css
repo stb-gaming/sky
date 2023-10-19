@@ -78,6 +78,12 @@ body {
 
 canvas {
 	vertical-align: top;
+	/* image-rendering: pixelated; */
+	width: 100%;
+	height: auto;
+	max-height: 100vh;
+	/* object-fit: contain; */
+	touch-action: auto;
 }
 
 .shadow {
@@ -160,13 +166,6 @@ body:after {
 }
 
 
-canvas {
-	/* image-rendering: pixelated; */
-	width: 100%;
-	height: auto;
-	object-fit: contain;
-	max-height: 100vh;
-}
 :not([data-fullscreen="true"])> canvas {
 	max-height: calc(100vh - 330px);
 } 
@@ -181,7 +180,6 @@ canvas {
 	touch-action: none;
 	margin: 0 auto;
 }
-
 
 #sky-remote {
 	position: relative;

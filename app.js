@@ -1,43 +1,77 @@
 const urlParams = new URLSearchParams(location.search),
-	gameEvents = {};
-let gameUrl;
+	gameEvents = {}
+let gameid;
+const games = {
+	"sky-snake":"../sky-snake/app.js",
+	"kurakku":"../kurakku/app.js",
+	"tomandjerryfoodfreeforall":"../tomandjerryfoodfreeforall/app.js",
+}
 
 function toCORS(url) {
 	return 'https://corsproxy.io/?' + encodeURIComponent(url);
 }
 
 function toDenki() {
-	location.href = gameUrl;
+	location.href = `https://denki.co.uk/sky/${gameid}/app.html`;
 }
 
+function replaceCanvas(element) {
+	const canvas = document.getElementById("canvas");
+	canvas.parentElement.replaceChild(element,canvas);
+	// canvas.replaceWith(element)
+	["id","class","tabindex","style","width","height"].forEach(attr => {
+		element.setAttribute(attr, canvas.getAttribute(attr))
+	});
+	
+}
 
-async function setAppUrl(url) {
-	url = toCORS(url);
+function loadSWF(swf,flashvars="") {
+	window.RufflePlayer = window.RufflePlayer || {};
 
-	const appJS = url.replace(".html", ".js"),
-		appWasm = url.replace(".html", ".wasm"),
-		appData = url.replace(".html", ".data"),
-		response = await fetch(appJS),
-		scriptContent = await response.text(),
-		scriptElement = document.createElement("script");
-
-	if(!response.ok) redirectToHelp();
+	const ruffle = window.RufflePlayer.newest(),
+        player = ruffle.createPlayer();
+		replaceCanvas(player)
+        player.load({
+			url: swf,
+			parameters:flashvars,
+			
+			// Options affecting the whole page
+			"publicPath": undefined,
+			"polyfills": true,
 		
-
-	scriptElement.textContent = scriptContent.split("app.wasm").join(appWasm).split("app.data").join(appData);
-	document.body.appendChild(scriptElement);
-
-
-	collectEvents();
-
+			// Options affecting files only
+			"allowScriptAccess": false,
+			"autoplay": "on",
+			"unmuteOverlay": "hidden",
+			"backgroundColor": null,
+			"wmode": "transparent",
+			"letterbox": "fullscreen",
+			"warnOnUnsupportedContent": true,
+			"contextMenu": "off",
+			"showSwfDownload": true,
+			"upgradeToHttps": window.location.protocol === "https:",
+			"maxExecutionDuration": 15,
+			"logLevel": "error",
+			"base": null,
+			"menu": false,
+			"salign": "",
+			"forceAlign": false,
+			"scale": "showAll",
+			"forceScale": true,
+			"frameRate": null,
+			"quality": "high",
+			"splashScreen": false,
+			"preferredRenderer": null,
+			"openUrlMode": "allow",
+			"allowNetworking": "all",
+			"favorFlash": true,
+		});
 }
 
-async function initSnake() {
-	const scriptElement = document.createElement("script"),
-		appJS = "../sky-snake/app.js",
-		response = await fetch(appJS),
-		scriptContent = await response.text();
-	scriptElement.textContent = scriptContent;
+
+async function loadGame(scriptUrl) {
+	const scriptElement = document.createElement("script")
+		scriptElement.src = scriptUrl;
 
 	collectEvents();
 	document.body.appendChild(scriptElement)
@@ -62,82 +96,100 @@ function collectEvents() {
 	};
 }
 
-function denkiInit() {
+async function loadDenkiGame(scriptUrl) {
 	var statusElement = document.getElementById('status');
-		var progressElement = document.getElementById('progress');
-		var spinnerElement = document.getElementById('spinner');
+	var progressElement = document.getElementById('progress');
+	var spinnerElement = document.getElementById('spinner');
 
-		var Module = {
-			preRun: [],
-			postRun: [],
-			print: (function () {
-				var element = document.getElementById('output');
-				if (element) element.value = ''; // clear browser cache
-				return function (text) {
-					if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-					// These replacements are necessary if you render to raw HTML
-					//text = text.replace(/&/g, "&amp;");
-					//text = text.replace(/</g, "&lt;");
-					//text = text.replace(/>/g, "&gt;");
-					//text = text.replace('\n', '<br>', 'g');
-					console.log(text);
-					if (element) {
-						element.value += text + "\n";
-						element.scrollTop = element.scrollHeight; // focus on bottom
-					}
-				};
-			})(),
-			printErr: function (text) {
+	var Module = {
+		preRun: [],
+		postRun: [],
+		print: (function () {
+			var element = document.getElementById('output');
+			if (element) element.value = ''; // clear browser cache
+			return function (text) {
 				if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-				console.error(text);
-			},
-			canvas: (function () {
-				var canvas = document.getElementById('canvas');
-
-				// As a default initial behavior, pop up an alert when webgl context is lost. To make your
-				// application robust, you may want to override this behavior before shipping!
-				// See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
-				canvas.addEventListener("webglcontextlost", function (e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
-
-				return canvas;
-			})(),
-			setStatus: function (text) {
-				if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
-				if (text === Module.setStatus.last.text) return;
-				var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-				var now = Date.now();
-				if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
-				Module.setStatus.last.time = now;
-				Module.setStatus.last.text = text;
-				if (m) {
-					text = m[1];
-					progressElement.value = parseInt(m[2]) * 100;
-					progressElement.max = parseInt(m[4]) * 100;
-					progressElement.hidden = false;
-					spinnerElement.hidden = false;
-				} else {
-					progressElement.value = null;
-					progressElement.max = null;
-					progressElement.hidden = true;
-					if (!text) spinnerElement.hidden = true;
+				// These replacements are necessary if you render to raw HTML
+				//text = text.replace(/&/g, "&amp;");
+				//text = text.replace(/</g, "&lt;");
+				//text = text.replace(/>/g, "&gt;");
+				//text = text.replace('\n', '<br>', 'g');
+				console.log(text);
+				if (element) {
+					element.value += text + "\n";
+					element.scrollTop = element.scrollHeight; // focus on bottom
 				}
-				statusElement.innerHTML = text;
-			},
-			totalDependencies: 0,
-			monitorRunDependencies: function (left) {
-				this.totalDependencies = Math.max(this.totalDependencies, left);
-				Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
-			}
-		};
-		Module.setStatus('Downloading...');
-		window.Module = Module
-		window.onerror = function () {
-			Module.setStatus('Exception thrown, see JavaScript console');
-			spinnerElement.style.display = 'none';
-			Module.setStatus = function (text) {
-				if (text) Module.printErr('[post-exception status] ' + text);
 			};
+		})(),
+		printErr: function (text) {
+			if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+			console.error(text);
+		},
+		canvas: (function () {
+			var canvas = document.getElementById('canvas');
+
+			// As a default initial behavior, pop up an alert when webgl context is lost. To make your
+			// application robust, you may want to override this behavior before shipping!
+			// See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+			canvas.addEventListener("webglcontextlost", function (e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+			return canvas;
+		})(),
+		setStatus: function (text) {
+			if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+			if (text === Module.setStatus.last.text) return;
+			var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+			var now = Date.now();
+			if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+			Module.setStatus.last.time = now;
+			Module.setStatus.last.text = text;
+			if (m) {
+				text = m[1];
+				progressElement.value = parseInt(m[2]) * 100;
+				progressElement.max = parseInt(m[4]) * 100;
+				progressElement.hidden = false;
+				spinnerElement.hidden = false;
+			} else {
+				progressElement.value = null;
+				progressElement.max = null;
+				progressElement.hidden = true;
+				if (!text) spinnerElement.hidden = true;
+			}
+			statusElement.innerHTML = text;
+		},
+		totalDependencies: 0,
+		monitorRunDependencies: function (left) {
+			this.totalDependencies = Math.max(this.totalDependencies, left);
+			Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+		}
+	};
+	Module.setStatus('Downloading...');
+	window.Module = Module
+	window.onerror = function () {
+		Module.setStatus('Exception thrown, see JavaScript console');
+		spinnerElement.style.display = 'none';
+		Module.setStatus = function (text) {
+			if (text) Module.printErr('[post-exception status] ' + text);
 		};
+	};
+
+
+	scriptUrl = toCORS(scriptUrl)
+	const appJS = scriptUrl.replace(".html", ".js"),
+		appWasm = appJS.replace(".js", ".wasm"),
+		appData = appJS.replace(".js", ".data"),
+		response = await fetch(appJS),
+		scriptContent = await response.text(),
+		scriptElement = document.createElement("script");
+
+	if(!response.ok) redirectToHelp();
+		
+
+	scriptElement.textContent = scriptContent.split("app.wasm").join(appWasm).split("app.data").join(appData);
+	document.body.appendChild(scriptElement);
+
+
+	collectEvents();
 }
 
 
@@ -146,10 +198,8 @@ window.addEventListener("load", () => {
 	if(!pathname.startsWith("/sky/")) pathname = "/sky"+location.pathname
 
 	
-	gameUrl = urlParams.get("url") || "https://denki.co.uk" + pathname;
-	const gameIdRX = /https:\/\/denki\.co\.uk\/sky\/([a-zA-Z0-9-]*)\/app\.html/,
-	result= gameIdRX.exec(gameUrl);
-	window.t = {gameUrl,gameIdRX,result}
+	const gameUrl = urlParams.get("url") || "https://denki.co.uk" + pathname;
+	result = /\/sky\/([a-zA-Z0-9-]*)\/app\.html/.exec(pathname);
 
 	if(result && result.length>1) gameid = result[1]
 
@@ -159,23 +209,22 @@ window.addEventListener("load", () => {
 			hsBtn.href = "https://stb-gaming.github.io/high-scores/games/"+gameid
 		}
 
+		const gameUrl = games[gameid]|| urlParams.get("url") || "https://denki.co.uk" + pathname;
+
 		try {
-			switch (gameid.toLowerCase()) {
-				case "sky-snake":
-					initSnake()
-					break;
-				default:
-					denkiInit();
-					setAppUrl(gameUrl);
-					break;
+			if(gameUrl.includes("denki.co.uk")) {
+				loadDenkiGame(gameUrl)
+			} else {
+				document.getElementById("denki_button")?.remove();
+				loadGame(gameUrl)
 			}
 		} catch (error) {
+			console.error(error)
 			redirectToHelp();
 		}
 		setupTouchEvents();
 		addGamepadEvents();
 		addKeyboardEvents();
-		//setupMidi();
 		connectToGame();
 	} else {
 		console.error("no gameid");

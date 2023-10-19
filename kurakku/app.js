@@ -1,0 +1,1 @@
+loadSWF("../kurakku/app.swf")
