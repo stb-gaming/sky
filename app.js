@@ -4,7 +4,8 @@ let gameid;
 const games = {
 	"sky-snake":"../sky-snake/app.js",
 	"kurakku":"../kurakku/app.js",
-	"tomandjerryfoodfreeforall":"../tomandjerryfoodfreeforall/app.js",
+	"tj_fff":"../tj_fff/app.js",
+	"tj_ff":"../tj_ff/app.js",
 }
 
 function toCORS(url) {

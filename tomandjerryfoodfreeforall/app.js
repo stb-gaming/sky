@@ -1,1 +1,0 @@
-loadSWF("../tomandjerryfoodfreeforall/app.swf")

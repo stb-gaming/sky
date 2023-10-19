@@ -1,0 +1,1 @@
+loadSWF("../tj_fff/food_fight.swf")
