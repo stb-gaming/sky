@@ -27,6 +27,24 @@ async function setAppUrl(url) {
 	scriptElement.textContent = scriptContent.split("app.wasm").join(appWasm).split("app.data").join(appData);
 	document.body.appendChild(scriptElement);
 
+
+	collectEvents();
+
+}
+
+async function initSnake() {
+	const scriptElement = document.createElement("script"),
+		appJS = "../sky-snake/app.js",
+		response = await fetch(appJS),
+		scriptContent = await response.text();
+	scriptElement.textContent = scriptContent;
+
+	collectEvents();
+	document.body.appendChild(scriptElement)
+}
+
+function collectEvents() {
+
 	const addEvt = window.addEventListener;
 
 	window.addEventListener = function (...args) {
@@ -42,12 +60,6 @@ async function setAppUrl(url) {
 			addEvt(...args);
 		}
 	};
-}
-
-function initSnake() {
-	let scriptElement = document.createElement("script");
-	scriptElement.src = "../sky-snake/app.js"
-	document.body.appendChild(scriptElement)
 }
 
 function denkiInit() {
@@ -142,7 +154,6 @@ window.addEventListener("load", () => {
 	if(result && result.length>1) gameid = result[1]
 
 	if(gameid) {
-		console.log(gameid);
 		const hsBtn = document.getElementById("highscore_button")
 		if(hsBtn) {
 			hsBtn.href = "https://stb-gaming.github.io/high-scores/games/"+gameid
@@ -161,7 +172,6 @@ window.addEventListener("load", () => {
 		} catch (error) {
 			//redirectToHelp();
 		}
-
 		setupTouchEvents();
 		addGamepadEvents();
 		addKeyboardEvents();
