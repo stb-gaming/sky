@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmltext>
+
+	<Foodfight>		<![CDATA[FOOD FREE FOR ALL]]></Foodfight>
+	<Play>			<![CDATA[PLAY]]></Play>
+	
+	<Instructions>	<![CDATA[INSTRUCTIONS]]></Instructions>
+	<Inst_pickup>	<![CDATA[Pickup cheese and bonus items]]></Inst_pickup>
+	<Inst_platform>	<![CDATA[Use special platforms carefully]]></Inst_platform>
+	<Inst_bad>		<![CDATA[Avoid Tom and other dangers]]></Inst_bad>
+	<Inst_switch>	<![CDATA[Jump on switches]]></Inst_switch>
+	
+	
+	<Selectskill>	<![CDATA[Select your skill level:]]></Selectskill>
+	<Hard>			<![CDATA[HARD]]></Hard>
+	<Easy>			<![CDATA[EASY]]></Easy>
+	<Or>			<![CDATA[or]]></Or>
+	
+	<Level>			<![CDATA[Level:]]></Level>
+	<Score>			<![CDATA[Score:]]></Score>
+	<Lives>			<![CDATA[Lives:]]></Lives>
+	
+	<Getready>		<![CDATA[Get ready for level:]]></Getready>
+	<Presskey>		<![CDATA[Press any key to continue]]></Presskey>	
+	<Welldone>		<![CDATA[WELL DONE!]]></Welldone>	
+	<Oops>			<![CDATA[OOPS!]]></Oops>	
+	<Extralife>		<![CDATA[1up]]></Extralife>
+	<Gameover>		<![CDATA[GAME OVER]]></Gameover>
+	<Totalscore>	<![CDATA[Total Score:]]></Totalscore>	
+	<Gamecomplete>	<![CDATA[GAME COMPLETED!]]></Gamecomplete>
+
+
+
+	
+</xmltext>
