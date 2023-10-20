@@ -6,6 +6,7 @@ const games = {
 	"kurakku":"../kurakku/app.js",
 	"tj_fff":"../tj_fff/app.js",
 	"tj_ff":"../tj_ff/app.js",
+	"beehive_swf":"../beehive_swf/app.js",
 }
 
 function toCORS(url) {
@@ -41,7 +42,7 @@ function loadSWF(swf,flashvars="") {
 			"polyfills": true,
 		
 			// Options affecting files only
-			"allowScriptAccess": false,
+			"allowScriptAccess": true,
 			"autoplay": "on",
 			"unmuteOverlay": "hidden",
 			"backgroundColor": null,
@@ -74,7 +75,6 @@ async function loadGame(scriptUrl) {
 	const scriptElement = document.createElement("script")
 		scriptElement.src = scriptUrl;
 
-	collectEvents();
 	document.body.appendChild(scriptElement)
 }
 
@@ -190,11 +190,11 @@ async function loadDenkiGame(scriptUrl) {
 	document.body.appendChild(scriptElement);
 
 
-	collectEvents();
+	// collectEvents();
 }
 
 
-window.addEventListener("load", () => {
+window.addEventListener("load",async  () => {
 	let pathname = location.pathname,gameid;
 	if(!pathname.startsWith("/sky/")) pathname = "/sky"+location.pathname
 
@@ -214,10 +214,10 @@ window.addEventListener("load", () => {
 
 		try {
 			if(gameUrl.includes("denki.co.uk")) {
-				loadDenkiGame(gameUrl)
+				await loadDenkiGame(gameUrl)
 			} else {
 				document.getElementById("denki_button")?.remove();
-				loadGame(gameUrl)
+				await loadGame(gameUrl)
 			}
 		} catch (error) {
 			console.error(error)
@@ -226,6 +226,8 @@ window.addEventListener("load", () => {
 		setupTouchEvents();
 		addGamepadEvents();
 		addKeyboardEvents();
+
+		collectEvents();
 		connectToGame();
 	} else {
 		console.error("no gameid");
