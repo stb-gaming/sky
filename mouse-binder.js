@@ -48,7 +48,7 @@ class PositionEditor {
 			editBtn.href="#"
 			editBtn.classList.add("btn","big","trans")
 			editBtn.innerText = "🏗️"
-			editBtn.dataset.balloon = "Edit Mouse Binds"
+			editBtn.dataset.balloon = "Edit Menu"
 			editBtn.onclick = ()=>this.toggle()
 
 			const menuBtn = document.createElement("a")
@@ -72,7 +72,7 @@ class PositionEditor {
 			mouseBtn.href="#"
 			mouseBtn.classList.add("btn","big","trans")
 			mouseBtn.innerText = "🐁"
-			mouseBtn.dataset.balloon = "Debug Mouse"
+			mouseBtn.dataset.balloon = "Toggle Debug Mouse"
 			mouseBtn.onclick = ()=>this.mouseBinder.toggleDebug();
 	}
 
