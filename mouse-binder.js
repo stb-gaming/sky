@@ -215,10 +215,14 @@ class MouseBinder {
 		this.debugMouse = this.createDot()
 		this.lastMousePos = []
 
-		this.canvas.addEventListener("mouseup", e => {
-		})
-
 		this.updateMenuPos();
+
+		window.addEventListener("pointerup",({clientX,clientY})=>{
+			const mouse = this.windowToCanvas(clientX,clientY),
+			menu = this.positions[this.currentMenu];
+			if(!menu) return
+			// TBD
+		})
 	}
 
 	setEventTarget(element,prefix,type) {
@@ -305,6 +309,8 @@ class MouseBinder {
 	}
 
 	updateMenuPos() {
+		const menu= this.positions[this.currentMenu];
+		if(!menu) return
 		const menuOptions = Object.values(this.positions[this.currentMenu]);
 		if (this.menuPos < 0) {
 			this.menuPos = 0;
@@ -313,6 +319,7 @@ class MouseBinder {
 			this.menuPos = menuOptions.length - 1;
 		}
 		const menuPosBounds = menuOptions[this.menuPos];
+		if(!menuPosBounds) return
 
 		this.mouseMove(
 			(menuPosBounds.left + menuPosBounds.right) / 2,
