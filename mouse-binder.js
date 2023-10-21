@@ -161,6 +161,7 @@ class PositionEditor {
 		if(!this.mouseBinder.positions[menu])this.mouseBinder.positions[menu] ||{}
 		const positions = this.mouseBinder.positions[menu]
 		const dataset = this.lastElement.dataset
+		if(!dataset.target) dataset.target = prompt("Target Menu")
 		let box =  {
 			target:dataset.target,
 			left:Number(dataset.left),
@@ -168,7 +169,6 @@ class PositionEditor {
 			top:Number(dataset.top),
 			bottom:Number(dataset.bottom)
 		}
-		if(!box.target) box.target = prompt("Target Menu")
 		positions[box.target] = box;
 	}
 
