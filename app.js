@@ -27,13 +27,13 @@ function replaceCanvas(element) {
 	
 }
 
-function loadSWF(swf,flashvars="") {
+async function loadSWF(swf,flashvars="") {
 	window.RufflePlayer = window.RufflePlayer || {};
 
 	const ruffle = window.RufflePlayer.newest(),
         player = ruffle.createPlayer();
 		replaceCanvas(player)
-        player.load({
+        await player.load({
 			url: swf,
 			parameters:flashvars,
 			
@@ -68,6 +68,8 @@ function loadSWF(swf,flashvars="") {
 			"allowNetworking": "all",
 			"favorFlash": true,
 		});
+
+		return player
 }
 
 
@@ -239,4 +241,6 @@ window.addEventListener("load",async  () => {
 SkyRemote.onTriggerEvent((type, options) => {
 	console.debug({ type, options });
 	if(gameEvents[type])	gameEvents[type](new KeyboardEvent(type, options));
+	//Keep actvating SkyRemote.on####### events
+	SkyRemote.constructor.triggerEvent(type,options)
 });

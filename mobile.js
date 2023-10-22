@@ -75,8 +75,8 @@ function createSkyRemoteContainer() {
 
 let lastTouchEnd = 0,
 	log = (function () {
-		let { log, info, warn, error,debug } = uWindow.console;
-		return { log, info, warn, error,debug };
+		let { log, info, warn, error } = uWindow.console;
+		return { log, info, warn, error };
 	})(),
 	queuedLogs = [];
 function logLog(type, ...args) {

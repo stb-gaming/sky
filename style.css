@@ -529,3 +529,11 @@ body>.emscripten {
 	translate: 1% -50%;
 	color: black;
 }
+
+#bind-canvas span {
+	opacity:  50%;
+}
+
+#bind-canvas [data-target]::before {
+	content: attr(data-target);
+}
