@@ -266,8 +266,22 @@ function createPopup(device, button) {
 	const popup = document.createElement('div');
 	popup.classList.add('bind-popup');
 
+	const popupHeader = document.createElement('div');
+	popupHeader.classList.add('bind-header');
+
 	const heading = document.createElement('h1');
 	heading.textContent = 'New Device: ';
+
+
+	const closeButton = document.createElement("button");
+	closeButton.textContent = "❌";
+	closeButton.dataset.balloon = "Close"
+	closeButton.classList.add("big","trans")
+	closeButton.onclick = () => {
+		cancelBind()
+	}
+
+	popupHeader.append(heading,closeButton)
 
 	const deviceText = document.createElement('h3');
 	deviceText.id = "bind-device";
@@ -281,7 +295,7 @@ function createPopup(device, button) {
 	const notice = document.createElement('em');
 	notice.textContent = 'Pressing system buttons such as the home or back button will not work - this has been tested.';
 
-	popup.appendChild(heading);
+	popup.appendChild(popupHeader);
 	popup.appendChild(deviceText);;
 	popup.appendChild(prompt);
 	popup.appendChild(notice);
@@ -596,6 +610,3 @@ function createSettings() {
 	updateBindSettings();
 }
 
-window.addEventListener("load", () => {
-
-})

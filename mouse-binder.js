@@ -218,7 +218,7 @@ class MouseBinder {
 		this.menuPos = 0;
 		this.posEditor = new PositionEditor(this)
 		this.debugMouse = this.createDot()
-		this.lastMousePos = []
+		this.lastMousePos = [];
 
 		//SkyRemote
 		if(typeof SkyRemote === 'undefined') {
@@ -378,7 +378,7 @@ class MouseBinder {
 		this.eventType = type;
 
 
-		window.addEventListener(this.eventPrefix+"up",({clientX,clientY})=>{
+		this.eventTarget.addEventListener(this.eventPrefix+"up",({clientX,clientY})=>{
 			const mouse = this.windowToCanvas(clientX,clientY),
 			menu = this.positions[this.menu];
 			if(!menu) return;
@@ -438,6 +438,7 @@ class MouseBinder {
 	}
 
 	left() {
+		console.log("hi");
 		this.traverse(-1,0)
 	}
 	right() {
