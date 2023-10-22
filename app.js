@@ -241,4 +241,6 @@ window.addEventListener("load",async  () => {
 SkyRemote.onTriggerEvent((type, options) => {
 	console.debug({ type, options });
 	if(gameEvents[type])	gameEvents[type](new KeyboardEvent(type, options));
+	//Keep actvating SkyRemote.on####### events
+	SkyRemote.constructor.triggerEvent(type,options)
 });

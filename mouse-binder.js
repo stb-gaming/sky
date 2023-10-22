@@ -36,7 +36,9 @@ class PositionEditor {
 		if(location.hostname == "localhost") {
 			this.helperButtons();
 		}
+
 		this.loadMenu();
+
 	}
 
 	helperButtons() {
@@ -78,22 +80,24 @@ class PositionEditor {
 
 	toggle() {
 		this.bindCanvas.style.display = this.bindCanvas.style.display ? null:"none"
+		this.loadMenu();
 	}
 
 	changeMenu(menu) {
 		const newMenu = menu|| prompt("Change Menu")
-		if(newMenu==this.mouseBinder.currentMenu&&confirm("Delete Menu?")) {
+		if(newMenu==this.mouseBinder.menu&&confirm("Delete Menu?")) {
 			delete this.mouseBinder.positions[menu];
 			this.bindCanvas.innerHTML = "";
 			return;
+		} else {
+			this.mouseBinder.changeMenu(newMenu,true);
 		}
-		this.mouseBinder.currentMenu = newMenu;
 		this.loadMenu();
 	}
 
 	loadMenu() {
 		this.bindCanvas.innerHTML = "";
-		const menu = this.mouseBinder.currentMenu,
+		const menu = this.mouseBinder.menu,
 		positions = this.mouseBinder.positions[menu];
 		if(!positions) {
 			this.mouseBinder.positions[menu] = {}
@@ -157,7 +161,7 @@ class PositionEditor {
 	}
 
 	saveBox() {
-		const menu = this.mouseBinder.currentMenu;
+		const menu = this.mouseBinder.menu;
 		if(!this.mouseBinder.positions[menu])this.mouseBinder.positions[menu] ||{}
 		const positions = this.mouseBinder.positions[menu]
 		const dataset = this.lastElement.dataset
@@ -174,7 +178,7 @@ class PositionEditor {
 
 	deleteBox(element) {
 		const target = element.dataset.target,
-			menu = this.mouseBinder.currentMenu;
+			menu = this.mouseBinder.menu;
 		delete this.mouseBinder.positions[menu][target]
 		element.remove();
 	}
@@ -209,27 +213,28 @@ class MouseBinder {
 		window.mouseBinder = this;
 		this.canvas = canvas;
 		this.positions = positions
-		this.currentMenu = Object.keys(positions)[0]||"main"
+		this.menu = Object.keys(positions)[0]||"main"
+		this.menuBreadcrumbs = []
 		this.menuPos = 0;
 		this.posEditor = new PositionEditor(this)
 		this.debugMouse = this.createDot()
 		this.lastMousePos = []
 
-		this.updateMenuPos();
-
-		window.addEventListener("pointerup",({clientX,clientY})=>{
-			const mouse = this.windowToCanvas(clientX,clientY),
-			menu = this.positions[this.currentMenu];
-			if(!menu) return
-			// TBD
-		})
+		//SkyRemote
+		if(typeof SkyRemote === 'undefined') {
+			console.error("No SkyRemote was found");
+		} else {
+			SkyRemote.onHoldButton("up", _=>this.up());
+			SkyRemote.onHoldButton("down", _=>this.down());
+			SkyRemote.onHoldButton("left", _=>this.left());
+			SkyRemote.onHoldButton("right", _=>this.right());
+			SkyRemote.onHoldButton("select", _=>this.selectDown());
+			SkyRemote.onReleaseButton("select", _=>this.selectUp());
+			SkyRemote.onHoldButton("backup", _=>this.backup());
+			SkyRemote.onHoldButton("help", _=>this.help());
+		}
 	}
 
-	setEventTarget(element,prefix,type) {
-		this.eventTarget = element
-		this.eventPrefix = prefix;
-		this.eventType = type;
-	}
 
 	get bounds() {
 		return canvas.getBoundingClientRect()
@@ -266,15 +271,13 @@ class MouseBinder {
 		this.debugMouse.style.display = this.debugMouse.style.display?null:"none"
 	}
 
-	sendMouseEvent(event,x,y) {
-		if(!x||!y) {
-			x = this.lastMousePos[0]
-			y = this.lastMousePos[1]
-		}
+	sendMouseEvent(event,x=this.lastMousePos[0],y=this.lastMousePos[1]) {
+		console.debug(`Mouse ${event} at ${[x,y]}`)
 		const c = this.canvasToWindow(x,y);
-		(this.eventTarget||this.canvas).dispatchEvent(new (this.eventType||MouseEvent)((this.eventPrefix||"mouse")+event,{
-			clientX:c[0],
-			clientY:c[1],
+		if(!this.eventTarget) this.setEventTarget(this.canvas,"mouse",MouseEvent)
+		this.eventTarget.dispatchEvent(new (this.eventType)(this.eventPrefix+event,{
+			clientX:parseFloat(c[0]),
+			clientY:parseFloat(c[1]),
 			bubbles: true,
 			cancelable: true,
 			composed: true
@@ -285,16 +288,22 @@ class MouseBinder {
 	}
 
 	 mouseDown( x, y) {
-		console.debug("pressing mouse at", x, y );
 		this.sendMouseEvent("down", x, y );
 	}
 	 mouseUp(x, y ) {
-		console.debug("releasing mouse at", x, y );
 		this.sendMouseEvent("up", x, y );
 	}
 	 mouseMove( x, y) {
-		console.debug("moving mouse to",  x, y );
 		this.sendMouseEvent("move",  x, y );
+	}
+
+	getItem(id=this.menuPos,menu=this.positions[this.menu]) {
+		if(!menu) return
+		if(typeof id === 'number') {
+			return Object.values(menu)[id]
+		}else {
+			return menu[id]
+		}
 	}
 
 
@@ -308,22 +317,164 @@ class MouseBinder {
 		});
 	}
 
+	clickItem(id) {
+		console.debug(`Clicking ${id}`)
+		const item = this.getItem(id)
+		this.click(
+			(item.left + item.right) / 2,
+			(item.top + item.bottom) / 2
+		);
+	}
+
+	holdItem(id) {
+		console.debug(`Holding ${id}`)
+		const item = this.getItem(id)
+		this.mouseDown(
+			(item.left + item.right) / 2,
+			(item.top + item.bottom) / 2
+		);
+	}
+
+	releaseItem(id) {
+		console.debug(`Releasing ${id}`)
+		const item = this.getItem(id)
+		this.mouseUp(
+			(item.left + item.right) / 2,
+			(item.top + item.bottom) / 2
+		);
+	}
+
 	updateMenuPos() {
-		const menu= this.positions[this.currentMenu];
+		const menu= this.positions[this.menu];
+		if(menu.select) {
+			this.menuPos = "select"
+		}
 		if(!menu) return
-		const menuOptions = Object.values(this.positions[this.currentMenu]);
-		if (this.menuPos < 0) {
-			this.menuPos = 0;
-		}
-		if (this.menuPos >= menuOptions.length) {
-			this.menuPos = menuOptions.length - 1;
-		}
-		const menuPosBounds = menuOptions[this.menuPos];
-		if(!menuPosBounds) return
+		const item = this.getItem()
+		if(!item) return
+		console.debug(item);
 
 		this.mouseMove(
-			(menuPosBounds.left + menuPosBounds.right) / 2,
-			(menuPosBounds.top + menuPosBounds.bottom) / 2
+			(item.left + item.right) / 2,
+			(item.top + item.bottom) / 2
 		);
+	}
+
+
+
+	changeMenu(menu,force) {
+		if((force||Object.keys(this.positions).includes(menu))&&Object.keys(this.positions[this.menu]).includes(menu)) {
+			this.menuBreadcrumbs.push(this.menu)
+			console.debug(`Changing menu to ${menu}`)
+			this.menu = menu;
+			this.menuPos = 0;
+			this.updateMenuPos();
+		}
+	}
+	setEventTarget(element,prefix,type) {
+		console.debug("setting event target to",element,prefix,type)
+		this.eventTarget = element
+		this.eventPrefix = prefix;
+		this.eventType = type;
+
+
+		window.addEventListener(this.eventPrefix+"up",({clientX,clientY})=>{
+			const mouse = this.windowToCanvas(clientX,clientY),
+			menu = this.positions[this.menu];
+			if(!menu) return;
+			for(const option in menu) {
+				const item = menu[option];
+				if(
+					mouse[0] > item.left && mouse[0] < item.right &&
+					mouse[1] > item.top && mouse[1] < item.bottom
+				) {
+					this.changeMenu(option)
+					if(this.getItem("pause")) {
+						this.menuBreadcrumbs = []
+					}
+				}
+				this.updateMenuPos();
+			}
+		})
+	}
+
+	traverse(dx, dy) {
+		const
+			items = this.positions[this.menu],
+			cb = this.getItem(),
+			cx = (cb.left + cb.right) / 2,
+			cy = (cb.top + cb.bottom) / 2;
+
+		let rels = Object.values(items).map((eb, i) => {
+			const
+				ex = (eb.left + eb.right) / 2,
+				ey = (eb.top + eb.bottom) / 2,
+				mx = dx > 0 // right
+					? eb.left - cb.right
+					: dx < 0 // left
+						? cb.left - eb.right
+						: ex - cx,
+				my = dy > 0 // down
+					? eb.top - cb.bottom
+					: dy < 0 //up
+						? cb.top - eb.bottom
+						: ey - cy,
+				m = Math.sqrt(mx * mx + my * my),
+				ux = mx / m,
+				uy = my / m;
+
+			return { i, eb, ux, uy, m, my, mx };
+
+		});
+
+		// eslint-disable-next-line eqeqeq
+		rels = rels.filter(e => (e.i !== this.menuPos) && (!dx || e.ux > 0) && (!dy || e.uy > 0));
+		rels = rels.sort((a, b) => a.m - b.m).sort((a, b) => (dx ? a.mx - b.mx : dy ? a.my - b.my : a.m - b.m));
+
+		if (!!rels.length) {
+			this.menuPos= rels[0].i;
+		}
+		this.updateMenuPos();
+	}
+
+	left() {
+		this.traverse(-1,0)
+	}
+	right() {
+		this.traverse(1,0)
+	}
+	up() {
+		this.traverse(0,-1)
+	}
+	down() {
+		this.traverse(0,1);
+	}
+	select() {
+		const item = this.getItem("select")||this.getItem()
+		this.clickItem(item.target)
+	}
+	selectDown() {
+		const item = this.getItem("select")||this.getItem()
+		this.holdItem(item.target)
+	}
+	selectUp() {
+		const item = this.getItem("select")||this.getItem()
+		this.releaseItem(item.target)
+	}
+	backup() {
+		if(this.getItem("pause")) {
+			console.debug("pausing")
+			this.clickItem("pause")
+		}
+		else if(!!this.menuBreadcrumbs.length) {
+			console.debug("going back a page")
+			this.clickItem(this.menuBreadcrumbs.pop())
+			this.menuBreadcrumbs.pop()
+		} else {
+			console.debug("nowhere to go back to")
+		}
+	}
+	help() {
+		this.clickItem("help")
 	}
 }
