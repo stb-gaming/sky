@@ -1,1 +1,1 @@
-loadSWF("../zk/app.swf")
+loadSWF("app.swf")
