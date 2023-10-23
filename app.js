@@ -5,7 +5,6 @@ const games = {
 	"sky-snake":"../sky-snake/app.js",
 	"kurakku":"../kurakku/app.js",
 	"tj_ff":"../tj_ff/app.js",
-	"eea":"../eea/app.js",
 	"zk":"../zk/app.js",
 }
 
