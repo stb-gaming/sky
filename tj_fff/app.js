@@ -1,1 +1,0 @@
-loadSWF("../tj_fff/app.swf")
