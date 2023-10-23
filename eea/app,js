@@ -1,0 +1,1 @@
+loadSWF("../tj_ff/app.swf")
