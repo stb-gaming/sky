@@ -1,0 +1,1 @@
+loadSWF("../zk/app.swf")
