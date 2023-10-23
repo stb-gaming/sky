@@ -1,1 +1,1 @@
-loadSWF("../eea/app.swf")
+loadSWF("app.swf")
