@@ -1,1 +1,0 @@
-loadSWF("../beehive_swf/app.swf")
