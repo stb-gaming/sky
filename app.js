@@ -5,7 +5,8 @@ const games = {
 	"sky-snake":"../sky-snake/app.js",
 	"kurakku":"../kurakku/app.js",
 	"tj_ff":"../tj_ff/app.js",
-	"beehive_swf":"../beehive_swf/app.js",
+	"eea":"../eea/app.js",
+	"zk":"../zk/app.js",
 }
 
 function toCORS(url) {
