@@ -20,8 +20,7 @@ buttons = ["select", "backup", "up", "down", "left", "right", "red", "green", "y
 let gamepadAnimationFrame = null,
 	lastGamepads = [],
 	lastInput = null,
-	midiAccess = null,
-	eventTarget;
+	midiAccess = null;
 
 
 function getTime() {
@@ -409,10 +408,10 @@ function connectToGame() {
 		for (const button of buttons) {
 			if (button.value) {
 				console.debug("Holding", button.button);
-				SkyRemote.holdButton(button.button,eventTarget);
+				SkyRemote.holdButton(button.button);
 			} else {
 				console.debug("Releasing", button.button);
-				SkyRemote.releaseButton(button.button,eventTarget);
+				SkyRemote.releaseButton(button.button);
 			}
 		}
 	});
@@ -437,7 +436,7 @@ function getSettingDropdown() {
 }
 
 function getSelectedDevice() {
-	return getSettingDropdown()?.value
+	return getSettingDropdown().value
 }
 
 
