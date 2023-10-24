@@ -6,6 +6,7 @@ const games = {
 	"kurakku":"../kurakku/app.js",
 	"tj_ff":"../tj_ff/app.js",
 	"zk":"../zk/app.js",
+	"tm":"../tm/app.js",
 }
 
 function toCORS(url) {
