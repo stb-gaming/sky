@@ -5,6 +5,7 @@ const games = {
 	"sky-snake":"../sky-snake/app.js",
 	"kurakku":"../kurakku/app.js",
 	"tj_ff":"../tj_ff/app.js",
+	"eea":"../eea/app.js",
 	"zk":"../zk/app.js",
 }
 
@@ -81,19 +82,17 @@ async function loadGame(scriptUrl) {
 
 function collectEvents() {
 
-	const addEvt = window.addEventListener;
 
-	window.addEventListener = function (...args) {
+	EventTarget.prototype.addEventListenerOld = EventTarget.prototype.addEventListener
+	EventTarget.prototype.addEventListener = function (...args) {
 		const eventTypes = ["keydown", "keyup"];
 
-		if (eventTypes.includes(args[0])) {
-			if (!gameEvents.hasOwnProperty(args[0])) {
+		if (eventTypes.includes(args[0])&&!gameEvents.hasOwnProperty(args[0])) {
 
 				console.debug(...args);
 				gameEvents[args[0]] = args[1];
-			}
 		} else {
-			addEvt(...args);
+			this.addEventListenerOld(...args);
 		}
 	};
 }
@@ -237,9 +236,9 @@ window.addEventListener("load",async  () => {
 
 
 
-SkyRemote.onTriggerEvent((type, options) => {
+SkyRemote.onTriggerEvent((type, options,element) => {
 	console.debug({ type, options });
 	if(gameEvents[type])	gameEvents[type](new KeyboardEvent(type, options));
 	//Keep actvating SkyRemote.on####### events
-	SkyRemote.constructor.triggerEvent(type,options)
+	SkyRemote.constructor.triggerEvent(type,options,element)
 });
