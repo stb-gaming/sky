@@ -8,7 +8,6 @@ const games = {
 	"eea":"../eea/app.js",
 	"zk":"../zk/app.js",
 	"bb":"../bb/app.js",
-	"pjd":"../pjd/app.js",
 }
 
 function toCORS(url) {
