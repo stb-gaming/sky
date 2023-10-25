@@ -349,10 +349,10 @@ class MouseBinder {
 
 	updateMenuPos() {
 		const menu= this.positions[this.menu];
+		if(!menu) return
 		if(menu.select) {
 			this.menuPos = "select"
 		}
-		if(!menu) return
 		const item = this.getItem()
 		if(!item) return
 		console.debug(item);

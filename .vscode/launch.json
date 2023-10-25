@@ -9,7 +9,7 @@
 			"request": "launch",
 			"reAttach": true,
 			"name": "Firefox",
-			"url": "http://localhost:8000/eea/app.html",
+			"url": "http://localhost:8000/bb/app.html",
 			"webRoot": "${workspaceFolder}"
 		}
 	]

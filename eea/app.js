@@ -1,4 +1,3 @@
 loadSWF("app.swf",
-[{"button":"help","keys":["h"],"codes":["KeyH"],"keyCodes":[72]}],
-{}
+[{"button":"help","keys":["h"],"codes":["KeyH"],"keyCodes":[72]}]
 )

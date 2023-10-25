@@ -91,12 +91,12 @@ function logLog(type, ...args) {
 	logText.innerText = args.join(" ");
 	logLine.appendChild(logText);
 
-	if(stackTrace) {
-		[_, fileName, lineNumber] = /([^\/]+):(\d+):\d+/g.exec(stackTrace)
-		let logLoc = document.createElement("span");
-		logLoc.innerText = `${fileName}:${lineNumber}`;
-		logLine.appendChild(logLoc);
-	}
+	// if(stackTrace) {
+	// 	[_, fileName, lineNumber] = /([^\/]+):(\d+):\d+/g.exec(stackTrace)
+	// 	let logLoc = document.createElement("span");
+	// 	logLoc.innerText = `${fileName}:${lineNumber}`;
+	// 	logLine.appendChild(logLoc);
+	// }
 
 
 
