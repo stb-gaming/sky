@@ -1,1 +1,1 @@
-
+loadSWF("app.swf")
