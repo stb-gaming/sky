@@ -9,6 +9,7 @@ const games = {
 	"zk":"../zk/app.js",
 	"bb":"../bb/app.js",
 	"op":"../op/app.js",
+	"pjd":"../pjd/app.js",
 }
 
 function toCORS(url) {
