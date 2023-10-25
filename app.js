@@ -10,6 +10,7 @@ const games = {
 	"bb":"../bb/app.js",
 	"op":"../op/app.js",
 	"pjd":"../pjd/app.js",
+	"tm":"../tm/app.js",
 }
 
 function toCORS(url) {
