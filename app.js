@@ -11,6 +11,7 @@ const games = {
 	"op":"../op/app.js",
 	"pjd":"../pjd/app.js",
 	"tm":"../tm/app.js",
+	"wwk":"../wwk/app.js",
 }
 
 function toCORS(url) {
