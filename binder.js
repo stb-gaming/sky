@@ -24,7 +24,7 @@ let gamepadAnimationFrame = null,
 
 
 function getTime() {
-	return Number(new Date());
+	return new Number(new Date());
 }
 
 
@@ -93,7 +93,12 @@ function getInput(device) {
 	});
 }
 
+/**
+ * 
+ * @param {KeyboardEvent} e 
+ */
 function keyboardCollector(e) {
+	if (!e.isTrusted) return
 	e.preventDefault();
 	collectInput("Keyboard", e.code, e.type == "keydown");
 }
@@ -124,15 +129,15 @@ function gamepadLoop() {
 
 	for (const gid in gamepads) {
 		if (!gamepads[gid]) continue;
-		const gamepad = gamepads[gid], lastGamepad = lastGamepads[gid]||{}
+		const gamepad = gamepads[gid], lastGamepad = lastGamepads[gid] || {}
 		if (gamepad.buttons) {
 			//console.debug("Gamepad has buttons");
-			lastGamepad.buttons = lastGamepad.buttons||[]
-		}else{
+			lastGamepad.buttons = lastGamepad.buttons || []
+		} else {
 			console.warn("Gamepad has no buttons");
 		}
 		for (const bid in gamepad.buttons) {
-			const button = gamepad.buttons[bid], lastButton = lastGamepad.buttons[bid]||false;
+			const button = gamepad.buttons[bid], lastButton = lastGamepad.buttons[bid] || false;
 			console.debug(lastButton, button.pressed);
 			if (button && lastButton !== button.pressed) {
 				collectInput(gamepad.id, "Button" + bid, button.pressed);
@@ -141,13 +146,13 @@ function gamepadLoop() {
 		}
 		if (gamepad.axes) {
 			//console.debug("Gamepad has axes");
-			lastGamepad.axes = lastGamepad.axes||[]
-		}else{
+			lastGamepad.axes = lastGamepad.axes || []
+		} else {
 			console.warn("Gamepad has no axes");
 		}
 		for (const aid in gamepad.axes) {
-			const axis = gamepad.axes[aid], lastAxis = lastGamepad.axes[aid]||0;
-			if (lastAxis !== axis&& Math.abs(axis)>.25) {
+			const axis = gamepad.axes[aid], lastAxis = lastGamepad.axes[aid] || 0;
+			if (lastAxis !== axis && Math.abs(axis) > .25) {
 				//TODO collect multiple axis
 				collectInput(gamepad.id, "Axis" + aid, axis);
 				lastGamepad.axes[aid] = axis;
@@ -201,7 +206,7 @@ async function setupMidi() {
 	if (midiAccess) return;
 	if (navigator.requestMIDIAccess) {
 		try {
-			midiAccess = await navigator.requestMIDIAccess({sysex:false,software:true});
+			midiAccess = await navigator.requestMIDIAccess({ sysex: false, software: true });
 
 		} catch (error) {
 			//alert("You may not play the game using midi inputs then.")
@@ -220,19 +225,19 @@ async function setupMidi() {
 }
 function midiToNote(midiId) {
 	const notesArray = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-	
+
 	const octave = Math.floor(midiId / 12) - 1;
 	const noteIndex = midiId % 12;
-	
+
 	const noteName = notesArray[noteIndex] + octave;
-	
+
 	return noteName;
-  }
+}
 
 function onMidiInput(message, inputDevice) {
-	if(message.data.length>1){
+	if (message.data.length > 1) {
 		const noteid = +message.data[1];
-		collectInput(inputDevice.name,midiToNote(noteid)||"Note"+noteid,message.data[2])
+		collectInput(inputDevice.name, midiToNote(noteid) || "Note" + noteid, message.data[2])
 	}
 }
 
@@ -276,12 +281,12 @@ function createPopup(device, button) {
 	const closeButton = document.createElement("button");
 	closeButton.textContent = "❌";
 	closeButton.dataset.balloon = "Close"
-	closeButton.classList.add("big","trans")
+	closeButton.classList.add("big", "trans")
 	closeButton.onclick = () => {
 		cancelBind()
 	}
 
-	popupHeader.append(heading,closeButton)
+	popupHeader.append(heading, closeButton)
 
 	const deviceText = document.createElement('h3');
 	deviceText.id = "bind-device";
@@ -436,7 +441,7 @@ function getSettingDropdown() {
 }
 
 function getSelectedDevice() {
-	return getSettingDropdown().value
+	return getSettingDropdown()?.value
 }
 
 
@@ -460,17 +465,18 @@ function updateDeviceDropdown() {
 
 function updateBindSettings() {
 	const device = getSelectedDevice();
-	buttons.forEach(button => {
-		const element = document.getElementById("setting_" + button);
-		document.getElementById("setting_" + button + "_bind").disabled = !Object.keys(bindings).length ? "true":null
-		if (!element||!bindings[button]||!bindings[button][device]) return
-		element.value = bindings[button][device].action;
-	})
+	if (device)
+		buttons.forEach(button => {
+			const element = document.getElementById("setting_" + button);
+			document.getElementById("setting_" + button + "_bind").disabled = !Object.keys(bindings).length ? "true" : null
+			if (!element || !bindings[button] || !bindings[button][device]) return
+			element.value = bindings[button][device].action;
+		})
 }
 
 function initSettings() {
 	const deviceBinds = document.getElementById("device_binds");
-	if(!deviceBinds) return
+	if (!deviceBinds) return
 
 	getSettingDropdown().addEventListener("input", updateBindSettings)
 
@@ -530,7 +536,7 @@ function createSettings() {
 	//Midi Button
 	const midiButton = document.createElement("button");
 	midiButton.textContent = "🎹";
-	midiButton.classList.add("big","trans")
+	midiButton.classList.add("big", "trans")
 	midiButton.dataset.balloon = "Enable MIDI"
 	midiButton.onclick = () => {
 		setupMidi();
@@ -539,7 +545,7 @@ function createSettings() {
 	// Create the refresh button
 	const refreshButton = document.createElement("button");
 	refreshButton.textContent = "🔄";
-	refreshButton.classList.add("big","trans")
+	refreshButton.classList.add("big", "trans")
 	refreshButton.dataset.balloon = "Refresh"
 	refreshButton.onclick = () => {
 		updateDeviceDropdown()
@@ -550,7 +556,7 @@ function createSettings() {
 	const closeButton = document.createElement("button");
 	closeButton.textContent = "❌";
 	closeButton.dataset.balloon = "Close"
-	closeButton.classList.add("big","trans")
+	closeButton.classList.add("big", "trans")
 	closeButton.onclick = () => {
 		settingsPanel.remove()
 	}

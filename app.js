@@ -84,8 +84,8 @@ async function loadGame(scriptUrl) {
 function collectEvents() {
 
 
-	EventTarget.prototype.addEventListenerOld = EventTarget.prototype.addEventListener
-	EventTarget.prototype.addEventListener = function (...args) {
+	window.addEventListenerOld = EventTarget.prototype.addEventListener
+	window.addEventListener = function (...args) {
 		const eventTypes = ["keydown", "keyup"];
 
 		if (eventTypes.includes(args[0])&&!gameEvents.hasOwnProperty(args[0])) {
