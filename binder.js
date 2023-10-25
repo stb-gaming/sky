@@ -533,6 +533,16 @@ function createSettings() {
 	const toolbar = document.createElement("div");
 	toolbar.classList.add("settings-toolbar")
 
+
+	//Tools Button
+	const toolsButton = document.createElement("button");
+	toolsButton.textContent = "🧰";
+	toolsButton.classList.add("big", "trans")
+	toolsButton.dataset.balloon = "Toolbox"
+	toolsButton.onclick = () => {
+		SummonSTBTools();
+	}
+
 	//Midi Button
 	const midiButton = document.createElement("button");
 	midiButton.textContent = "🎹";
@@ -561,6 +571,7 @@ function createSettings() {
 		settingsPanel.remove()
 	}
 
+	toolbar.appendChild(toolsButton);
 	toolbar.appendChild(midiButton);
 	toolbar.appendChild(refreshButton);
 	toolbar.appendChild(closeButton);

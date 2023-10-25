@@ -33,9 +33,6 @@ class PositionEditor {
 			this.mouseUp(clientX,clientY)
 		})
 
-		if(location.hostname == "localhost") {
-			this.helperButtons();
-		}
 
 		this.loadMenu();
 
@@ -221,17 +218,23 @@ class MouseBinder {
 		this.lastMousePos = [];
 
 		//SkyRemote
-		if(typeof SkyRemote === 'undefined') {
-			console.error("No SkyRemote was found");
+		if(positions&&!!Object.keys(positions[this.menu]).length) {
+			if(typeof SkyRemote === 'undefined') {
+				console.error("No SkyRemote was found");
+			} else {
+				SkyRemote.onHoldButton("up", _=>this.up());
+				SkyRemote.onHoldButton("down", _=>this.down());
+				SkyRemote.onHoldButton("left", _=>this.left());
+				SkyRemote.onHoldButton("right", _=>this.right());
+				SkyRemote.onHoldButton("select", _=>this.selectDown());
+				SkyRemote.onReleaseButton("select", _=>this.selectUp());
+				SkyRemote.onHoldButton("backup", _=>this.backup());
+				SkyRemote.onHoldButton("help", _=>this.help());
+			}
 		} else {
-			SkyRemote.onHoldButton("up", _=>this.up());
-			SkyRemote.onHoldButton("down", _=>this.down());
-			SkyRemote.onHoldButton("left", _=>this.left());
-			SkyRemote.onHoldButton("right", _=>this.right());
-			SkyRemote.onHoldButton("select", _=>this.selectDown());
-			SkyRemote.onReleaseButton("select", _=>this.selectUp());
-			SkyRemote.onHoldButton("backup", _=>this.backup());
-			SkyRemote.onHoldButton("help", _=>this.help());
+			additionalOnTriggerEvents.push(()=>{
+				this.click(.5,.5)
+			})
 		}
 	}
 

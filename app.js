@@ -1,18 +1,18 @@
 const urlParams = new URLSearchParams(location.search),
-	gameEvents = {}
+	gameEvents = {},
+	games = {
+		"sky-snake": "../sky-snake/app.js",
+		"kurakku": "../kurakku/app.js",
+		"tj_ff": "../tj_ff/app.js",
+		"eea": "../eea/app.js",
+		"zk": "../zk/app.js",
+		"bb": "../bb/app.js",
+		"op": "../op/app.js",
+		"pjd": "../pjd/app.js",
+		"tm": "../tm/app.js",
+		"wwk": "../wwk/app.js",
+	},additionalOnTriggerEvents =[];
 let gameid;
-const games = {
-	"sky-snake":"../sky-snake/app.js",
-	"kurakku":"../kurakku/app.js",
-	"tj_ff":"../tj_ff/app.js",
-	"eea":"../eea/app.js",
-	"zk":"../zk/app.js",
-	"bb":"../bb/app.js",
-	"op":"../op/app.js",
-	"pjd":"../pjd/app.js",
-	"tm":"../tm/app.js",
-	"wwk":"../wwk/app.js",
-}
 
 function toCORS(url) {
 	return 'https://corsproxy.io/?' + encodeURIComponent(url);
@@ -24,63 +24,182 @@ function toDenki() {
 
 function replaceCanvas(element) {
 	const canvas = document.getElementById("canvas");
-	canvas.parentElement.replaceChild(element,canvas);
+	canvas.parentElement.replaceChild(element, canvas);
 	// canvas.replaceWith(element)
-	["id","class","tabindex","style","width","height"].forEach(attr => {
+	["id", "class", "tabindex", "style", "width", "height"].forEach(attr => {
 		element.setAttribute(attr, canvas.getAttribute(attr))
 	});
-	
+
 }
 
-async function loadSWF(swf,flashvars="") {
+async function createRuffle(swf, flashvars = "") {
 	window.RufflePlayer = window.RufflePlayer || {};
 
 	const ruffle = window.RufflePlayer.newest(),
-        player = ruffle.createPlayer();
-		replaceCanvas(player)
-        await player.load({
-			url: swf,
-			parameters:flashvars,
-			
-			// Options affecting the whole page
-			"publicPath": undefined,
-			"polyfills": true,
-		
-			// Options affecting files only
-			"allowScriptAccess": true,
-			"autoplay": "on",
-			"unmuteOverlay": "hidden",
-			"backgroundColor": null,
-			"wmode": "transparent",
-			"letterbox": "fullscreen",
-			"warnOnUnsupportedContent": true,
-			"contextMenu": "off",
-			"showSwfDownload": true,
-			"upgradeToHttps": window.location.protocol === "https:",
-			"maxExecutionDuration": 15,
-			"logLevel": "error",
-			"base": null,
-			"menu": false,
-			"salign": "",
-			"forceAlign": false,
-			"scale": "showAll",
-			"forceScale": true,
-			"frameRate": null,
-			"quality": "high",
-			"splashScreen": false,
-			"preferredRenderer": null,
-			"openUrlMode": "allow",
-			"allowNetworking": "all",
-			"favorFlash": true,
-		});
+		player = ruffle.createPlayer();
+	replaceCanvas(player)
+	await player.load({
+		url: swf,
+		parameters: flashvars,
 
-		return player
+		// Options affecting the whole page
+		"publicPath": undefined,
+		"polyfills": true,
+
+		// Options affecting files only
+		"allowScriptAccess": true,
+		"autoplay": "on",
+		"unmuteOverlay": "hidden",
+		"backgroundColor": null,
+		"wmode": "transparent",
+		"letterbox": "fullscreen",
+		"warnOnUnsupportedContent": true,
+		"contextMenu": "off",
+		"showSwfDownload": true,
+		"upgradeToHttps": window.location.protocol === "https:",
+		"maxExecutionDuration": 15,
+		"logLevel": "error",
+		"base": null,
+		"menu": false,
+		"salign": "",
+		"forceAlign": false,
+		"scale": "showAll",
+		"forceScale": true,
+		"frameRate": null,
+		"quality": "high",
+		"splashScreen": false,
+		"preferredRenderer": null,
+		"openUrlMode": "allow",
+		"allowNetworking": "all",
+		"favorFlash": true,
+	});
+
+	eventTarget = player.shadowRoot.querySelector("canvas");
+
+	additionalOnTriggerEvents.push(()=>{
+		eventTarget.focus()
+	})
+
+	return player
+}
+
+function loadMouseBinds(player, mouseBinds) {
+	const binder = new MouseBinder(player, mouseBinds);
+	binder.setEventTarget(player.shadowRoot.querySelector("canvas"), "pointer", PointerEvent)
+}
+
+function loadRebinds(player, rebinds) {
+	for (const { button, codes, keyCodes, keys } of rebinds) {
+		const binding = SkyRemote.getBinding(button)
+		binding.codes = codes
+		binding.keyCodes = keyCodes
+		binding.keys = keys
+	}
+}
+
+async function createSkyRemoteChanges() {
+	removeKeyboardEvents()
+	unCollectEvents()
+	cancelBind()
+	const bindings = [], buttons = "select,backup,up,down,left,right,red,green,blue,yellow,help".split(",")
+	async function getKey() {
+		return new Promise((res,rej)=>{
+			const event = "keyup";
+			function callback(e) {
+				window.removeEventListener(event,callback)
+				res(e)
+			}
+			window.addEventListener(event,callback)
+		})
+	}
+	let button;
+
+	do {
+		button = prompt(`Type the name of a sky remote button such as:
+${buttons.join(", ")}
+Leave blank if you are finished.`);
+		if(button) {
+			if(buttons.includes(button)) {
+				let e,confirmed;
+				do {
+					alert(`Press 'OK' and then press the key that the game looks for when the player wants to press '${button}'`)
+					e = await getKey()
+					alert(`Press OK and press ${e.key} again `);
+					confirmed = (await getKey()).key == e.key;
+				} while(!confirmed)
+				bindings.push({
+					button,
+					keys:[e.key],
+					codes:[e.code],
+					keyCodes:[e.keyCode]
+				})
+				alert(`Saved ${button} as ${e.key}`)
+			} else{
+				alert("Invalid SkyRemote Button")
+			}
+		}
+	} while (button);
+
+	prompt("Here are your finished bindings, copy this into app.js:",JSON.stringify(bindings))
+
+}
+
+function SummonSTBTools() {
+	if(window.mouseBinder)
+	window.mouseBinder.posEditor.helperButtons()
+
+	const toolbar = document.getElementsByClassName("toolbar")[0]
+
+	const editBtn = document.createElement("a")
+			toolbar.prepend(editBtn)
+			editBtn.href="#"
+			editBtn.classList.add("btn","big","trans")
+			editBtn.innerText = "📺"
+			editBtn.dataset.balloon = "Change SkyRemote"
+			editBtn.onclick = ()=>createSkyRemoteChanges()
+	alert("Game Setup Mode Activated 🥳")
+}
+
+async function loadSWF(...args) {
+	window.appJS = [...args];
+	function getSWF(value) {
+		return typeof value == "string" &&
+			value.endsWith(".swf")
+	}
+	function getMouseBinds(value) {
+		return typeof value == "object" && !Array.isArray(value);
+	}
+	function getSkyRemoteRebinds(value) {
+		return Array.isArray(value)
+	}
+	function getArg(cb) {
+		const i = args.findIndex(cb)
+		if (i !== -1) {
+			const thing = args[i]
+			delete args[i];
+			return thing
+		}
+	}
+	const swf = getArg(getSWF),
+		rebinds = getArg(getSkyRemoteRebinds)||[],
+		mouseBinds = getArg(getMouseBinds)||{};
+	if (typeof swf === 'undefined') throw new Error("No SWF Specified")
+	const player = await createRuffle(swf);
+
+	if (mouseBinds) {
+		loadMouseBinds(player, mouseBinds)
+	}
+	if (rebinds) {
+		loadRebinds(player, rebinds);
+	}
+
+	return player
 }
 
 
 async function loadGame(scriptUrl) {
 	const scriptElement = document.createElement("script")
-		scriptElement.src = scriptUrl;
+	scriptElement.src = scriptUrl;
 
 	document.body.appendChild(scriptElement)
 }
@@ -88,18 +207,22 @@ async function loadGame(scriptUrl) {
 function collectEvents() {
 
 
-	window.addEventListenerOld = EventTarget.prototype.addEventListener
+	window.addEventListenerOld = window.addEventListener
 	window.addEventListener = function (...args) {
 		const eventTypes = ["keydown", "keyup"];
 
-		if (eventTypes.includes(args[0])&&!gameEvents.hasOwnProperty(args[0])) {
+		if (eventTypes.includes(args[0]) && !gameEvents.hasOwnProperty(args[0])) {
 
-				console.debug(...args);
-				gameEvents[args[0]] = args[1];
+			console.debug(...args);
+			gameEvents[args[0]] = args[1];
 		} else {
 			this.addEventListenerOld(...args);
 		}
 	};
+}
+
+function unCollectEvents() {
+	window.addEventListener = window.addEventListenerOld
 }
 
 async function loadDenkiGame(scriptUrl) {
@@ -188,37 +311,34 @@ async function loadDenkiGame(scriptUrl) {
 		scriptContent = await response.text(),
 		scriptElement = document.createElement("script");
 
-	if(!response.ok) redirectToHelp();
-		
+	if (!response.ok) redirectToHelp();
+
 
 	scriptElement.textContent = scriptContent.split("app.wasm").join(appWasm).split("app.data").join(appData);
 	document.body.appendChild(scriptElement);
-
-
-	// collectEvents();
 }
 
 
-window.addEventListener("load",async  () => {
-	let pathname = location.pathname,gameid;
-	if(!pathname.startsWith("/sky/")) pathname = "/sky"+location.pathname
+window.addEventListener("load", async () => {
+	let pathname = location.pathname, gameid;
+	if (!pathname.startsWith("/sky/")) pathname = "/sky" + location.pathname
 
-	
+
 	const gameUrl = urlParams.get("url") || "https://denki.co.uk" + pathname;
 	result = /\/sky\/([a-zA-Z0-9-_]*)\/app\.html/.exec(pathname);
 
-	if(result && result.length>1) gameid = result[1]
+	if (result && result.length > 1) gameid = result[1]
 
-	if(gameid) {
+	if (gameid) {
 		const hsBtn = document.getElementById("highscore_button")
-		if(hsBtn) {
-			hsBtn.href = "https://stb-gaming.github.io/high-scores/games/"+gameid
+		if (hsBtn) {
+			hsBtn.href = "https://stb-gaming.github.io/high-scores/games/" + gameid
 		}
 
-		const gameUrl = games[gameid]|| urlParams.get("url") || "https://denki.co.uk" + pathname;
+		const gameUrl = games[gameid] || urlParams.get("url") || "https://denki.co.uk" + pathname;
 
 		try {
-			if(gameUrl.includes("denki.co.uk")) {
+			if (gameUrl.includes("denki.co.uk")) {
 				await loadDenkiGame(gameUrl)
 			} else {
 				document.getElementById("denki_button")?.remove();
@@ -241,9 +361,12 @@ window.addEventListener("load",async  () => {
 
 
 
-SkyRemote.onTriggerEvent((type, options,element) => {
+SkyRemote.onTriggerEvent((type, options, element) => {
 	console.debug({ type, options });
-	if(gameEvents[type])	gameEvents[type](new KeyboardEvent(type, options));
+	for (const E of additionalOnTriggerEvents) {
+		E();
+	}
+	if (gameEvents[type]) gameEvents[type](new KeyboardEvent(type, options));
 	//Keep actvating SkyRemote.on####### events
-	SkyRemote.constructor.triggerEvent(type,options,element)
+	SkyRemote.constructor.triggerEvent(type, options, element)
 });
