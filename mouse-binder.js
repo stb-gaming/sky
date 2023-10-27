@@ -2,6 +2,15 @@ function pxToNumber(px) {
 	return Number(px.replace("px",""))
 }
 
+const regionSchema = {
+	left:0,
+	right: 0,
+	up: 0,
+	down: 0,
+	role: "button",
+	sliderSpeed: 0.01
+}
+
 class PositionEditor {
 	constructor(mouseBinder) {
 		this.mouseBinder = mouseBinder;
@@ -86,7 +95,7 @@ If you do 'select' then the player wont be able to switch between menu options.
 		if(!toolbar) return
 		const createButton = toolbar.addButton({label:"Create Region",emoji:"🆕",action:()=>this.setMode("create")})
 		const deleteButton = toolbar.addButton({label:"Delete Region",emoji:"🗑️",action:()=>this.setMode("delete")})
-		const renameButton = toolbar.addButton({label:"Set Target"+this.aboutTargets(),emoji:"🎯",action:()=>this.setMode("rename")})
+		const renameButton = toolbar.addButton({label:"Set Target",emoji:"🎯",action:()=>this.setMode("rename")})
 		const roleButton = toolbar.addButton({label:"Set Region Role",emoji:"🤹",action:()=>this.setMode("role")})
 		const setButton = toolbar.addButton({label:"Set Property",emoji:"🔧",action:()=>this.setMode("set")})
 		toolbar.addButton({label:"Set Custom Mode",emoji:"🧪",action:()=>this.setMode(prompt("Set Mode"))})
@@ -125,8 +134,8 @@ If you do 'select' then the player wont be able to switch between menu options.
 			this.mouseBinder.positions[menu] = {}
 			return;
 		}else {
-			for (const {left,top,right,bottom,target,role} of Object.values(positions)) {
-				this.createBox(left,top,right,bottom,target,role)
+			for (const region of Object.values(positions)) {
+				this.createBox(region)
 				this.saveBox();
 			}
 		}
@@ -136,7 +145,7 @@ If you do 'select' then the player wont be able to switch between menu options.
 		return this.mouseBinder.bounds;
 	}
 
-	createBox(left,top,right,bottom,target,role) {
+	createBox(region) {
 		this.lastElement = document.createElement("span");
 		this.bindCanvas.appendChild(this.lastElement)
 		this.lastElement.addEventListener("click",e=>{
@@ -162,43 +171,40 @@ If you do 'select' then the player wont be able to switch between menu options.
 					break;
 			}
 		})
-		this.setBox(left,top,right,bottom,target,role)
+		for( const key in regionSchema) {
+			this.lastElement.dataset[key] = regionSchema[key]
+		}
+		this.setBox(region)
 	}
-	setBox(left,top,right,bottom,target,role) {
+	setBox(region) {
+		const {left,top,right,bottom} = region;
 		const [winLeft,winTop] = this.mouseBinder.canvasToWindow(left,top),
 			[winRight,winBottom] = this.mouseBinder.canvasToWindow(right,bottom);
 		if(left){
-			this.lastElement.dataset.left = left
 			this.lastElement.style.left = `${winLeft-this.bounds.left}px`;
 		}
 		if(top) {
-			this.lastElement.dataset.top = top
 			this.lastElement.style.top = `${winTop-this.bounds.top}px`;
 		}
 		if(right) {
-			this.lastElement.dataset.right = right
 			this.lastElement.style.width = `${winRight-pxToNumber(this.lastElement.style.left)-this.bounds.left}px`;
 		}
 		if(bottom) {
-			this.lastElement.dataset.bottom = bottom
 			this.lastElement.style.height = `${winBottom-pxToNumber(this.lastElement.style.top)-this.bounds.top}px`;
 		}
-		if(target) {
-			this.lastElement.dataset.target = target;
-		}
-		if(role) {
-			this.lastElement.dataset.role = role||"button"
+		for (const key in region) {
+			this.lastElement.dataset[key] = region[key]
 		}
 	}
 
 	changeBox(left,top,right,bottom) {
 		let d= this.lastElement.dataset
-		this.setBox(
-			left?d.left+left:null,
-			top?d.top+top:null,
-			right?d.right+right:null,
-			bottom?d.bottom+bottom:null,
-			)
+		this.setBox({
+			left:left?d.left+left:null,
+			top:top?d.top+top:null,
+			right:right?d.right+right:null,
+			bottom:bottom?d.bottom+bottom:null,
+		})
 	}
 
 	saveBox(element) {
@@ -208,13 +214,16 @@ If you do 'select' then the player wont be able to switch between menu options.
 		const positions = this.mouseBinder.positions[menu]
 		const dataset = this.lastElement.dataset
 		if(!dataset.target) dataset.target = prompt("Target Menu"+this.aboutTargets())
-		let box =  {
-			target:dataset.target,
-			left:Number(dataset.left),
-			right:Number(dataset.right),
-			top:Number(dataset.top),
-			bottom:Number(dataset.bottom),
-			role:dataset.role
+		if(!dataset.target){
+			element.remove()
+			return
+		}
+		let box =  {}
+		for(let key in dataset) {
+			box[key] = dataset[key]
+			if(regionSchema[key]) {
+				box[key] = regionSchema[key].constructor(box[key])
+			}
 		}
 		positions[box.target] = box;
 	}
@@ -229,7 +238,7 @@ If you do 'select' then the player wont be able to switch between menu options.
 	mouseDown(clientX,clientY) {
 		this.mousedown = [clientX,clientY]
 		const pos = this.mouseBinder.windowToCanvas(clientX,clientY)
-		if(this.mode==="create")this.createBox(...pos)
+		if(this.mode==="create")this.createBox({left:pos[0],top:pos[1]})
 	}
 	mouseUp(clientX,clientY){
 		this.mousedown = false
@@ -240,7 +249,7 @@ If you do 'select' then the player wont be able to switch between menu options.
 	mouseMove(clientX,clientY) {
 		if(!this.mousedown) return
 		const pos = this.mouseBinder.windowToCanvas(clientX,clientY)
-		if(this.mode==="create")this.setBox(null,null,...pos)
+		if(this.mode==="create")this.setBox({right:pos[0],bottom:pos[1]})
 	}
 
 	cleanup() {
