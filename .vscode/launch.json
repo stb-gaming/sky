@@ -8,13 +8,15 @@
 			"type": "firefox",
 			"request": "launch",
 			"reAttach": true,
-			"name": "Firefox",
+			"name": "Launch Testing Firefox",
 			"url": "http://localhost:8000/bb/app.html",
 			"webRoot": "${workspaceFolder}",
 			"clearConsoleOnReload": true,
 			"reloadOnChange": {
 				"watch": "${workspaceFileFolder}/**/*.js",
-			}
+			},
+			"keepProfileChanges": true,
+			"profile": "vscode-debug"
 		}
 	]
 }

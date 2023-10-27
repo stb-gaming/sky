@@ -5,8 +5,8 @@ function pxToNumber(px) {
 const regionSchema = {
 	left:0,
 	right: 0,
-	up: 0,
-	down: 0,
+	top: 0,
+	bottom: 0,
 	role: "button",
 	sliderSpeed: 0.01
 }
@@ -68,10 +68,11 @@ If you do 'select' then the player wont be able to switch between menu options.
 
 	setMode(mode) {
 		const oldMode = this.mode;
-		this.mode = this.mode==mode ? null:mode;
+		this.mode = this.mode===mode ? null:mode;
 
-		const oldModeElement = document.getElementById("editor-mode-"+oldMode),
-		modeElement = document.getElementById("editor-mode-"+mode);
+		const customButton = document.getElementById("editor-custom-mode"),
+		oldModeElement = document.getElementById("editor-mode-"+oldMode)||customButton,
+		modeElement = document.getElementById("editor-mode-"+mode)||customButton;
 		if(oldModeElement)oldModeElement.classList.remove("active")
 		if(modeElement){
 			if(this.mode === mode) {
@@ -80,12 +81,14 @@ If you do 'select' then the player wont be able to switch between menu options.
 				modeElement.classList.remove("active")
 			}
 		}
-		this.bindCanvas.style.display = typeof mode !== "undefined"?null:"none"
+		this.bindCanvas.style.display = this.mode ?null:"none"
+		if(this.mode) {
+			this.loadMenu();
+		}
 	}
 
 	helperButtonsMenus(toolbar) {
 		if(!toolbar) return
-		toolbar.addButton({label:"Toggle Regions",emoji:"👁️",action:()=>this.toggle()})
 		toolbar.addButton({label:"Save",emoji:"💾",action:()=>prompt("Copy this", JSON.stringify(this.mouseBinder.positions))})
 		toolbar.addButton({label:"Change Menu",emoji:"📜",action:()=>this.changeMenu()})
 		toolbar.addButton({label:"Toggle Debug Mouse",emoji:"🐁",action:()=>this.mouseBinder.toggleDebug()})
@@ -98,13 +101,14 @@ If you do 'select' then the player wont be able to switch between menu options.
 		const renameButton = toolbar.addButton({label:"Set Target",emoji:"🎯",action:()=>this.setMode("rename")})
 		const roleButton = toolbar.addButton({label:"Set Region Role",emoji:"🤹",action:()=>this.setMode("role")})
 		const setButton = toolbar.addButton({label:"Set Property",emoji:"🔧",action:()=>this.setMode("set")})
-		toolbar.addButton({label:"Set Custom Mode",emoji:"🧪",action:()=>this.setMode(prompt("Set Mode"))})
+		const customButton = toolbar.addButton({label:"Set Custom Mode",emoji:"🧪",action:()=>this.setMode(prompt("Set Mode or set blank to exit"))})
 
 		createButton.id = "editor-mode-create"
 		deleteButton.id = "editor-mode-delete"
 		renameButton.id = "editor-mode-rename"
 		setButton.id = "editor-mode-set"
 		roleButton.id = "editor-mode-role"
+		customButton.id = "editor-custom-mode";
 
 	}
 
@@ -146,6 +150,7 @@ If you do 'select' then the player wont be able to switch between menu options.
 	}
 
 	createBox(region) {
+		console.debug("Creating Region",region)
 		this.lastElement = document.createElement("span");
 		this.bindCanvas.appendChild(this.lastElement)
 		this.lastElement.addEventListener("click",e=>{
@@ -177,6 +182,7 @@ If you do 'select' then the player wont be able to switch between menu options.
 		this.setBox(region)
 	}
 	setBox(region) {
+		console.debug("Setting region to ",region)
 		const {left,top,right,bottom} = region;
 		const [winLeft,winTop] = this.mouseBinder.canvasToWindow(left,top),
 			[winRight,winBottom] = this.mouseBinder.canvasToWindow(right,bottom);
@@ -221,7 +227,7 @@ If you do 'select' then the player wont be able to switch between menu options.
 		let box =  {}
 		for(let key in dataset) {
 			box[key] = dataset[key]
-			if(regionSchema[key]) {
+			if(typeof regionSchema[key] !== 'undefined') {
 				box[key] = regionSchema[key].constructor(box[key])
 			}
 		}
@@ -331,6 +337,9 @@ class MouseBinder {
 
 	sendMouseEvent(event,x=this.lastMousePos[0],y=this.lastMousePos[1]) {
 		console.debug(`Mouse ${event} at ${[x,y]}`)
+		if(x==NaN||y==NaN){
+			throw new Error("TODO: Fix sending NaN coordinates. Please report this.")
+		}
 		const c = this.canvasToWindow(x,y);
 		if(!this.eventTarget) this.setEventTarget(this.canvas,"mouse",MouseEvent)
 		this.eventTarget.dispatchEvent(new (this.eventType)(this.eventPrefix+event,{
@@ -403,13 +412,14 @@ class MouseBinder {
 	}
 
 	updateMenuPos() {
-		const menu= this.positions[this.menu];
+		const menu = this.positions[this.menu];
 		if(!menu) return
 		if(menu.select) {
 			this.menuPos = "select"
 		}
 		const item = this.getItem()
 		if(!item) return
+		this.menuPos = item.target
 		console.debug(item);
 
 		this.mouseMove(
@@ -421,7 +431,7 @@ class MouseBinder {
 
 
 	changeMenu(menu,force) {
-		if((force||Object.keys(this.positions).includes(menu))&&Object.keys(this.positions[this.menu]).includes(menu)) {
+		if((force||Object.keys(this.positions).includes(menu))) {
 			this.menuBreadcrumbs.push(this.menu)
 			console.debug(`Changing menu to ${menu}`)
 			this.menu = menu;
@@ -451,7 +461,7 @@ class MouseBinder {
 						this.menuBreadcrumbs = []
 					}
 				}
-				this.updateMenuPos();
+				if(this.getItem().role==="button") this.updateMenuPos();
 			}
 		})
 	}
