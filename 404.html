@@ -117,7 +117,7 @@ function redirectToHelp() {
 	<div class="emscripten_border">
 		<canvas class="emscripten" id="canvas" tabindex="-1" width="720"
 			height="576" style="cursor: default;"></canvas>
-		<div class="toolbar">
+		<div class="toolbar bottom">
 			<a href="https://stb-gaming.github.io/high-scores/games" class="btn big trans" data-balloon="More Games"><img src="https://stb-gaming.github.io/sky-games-images/SKY%20Games/nogame.png" alt="🎮"></a>
 			<a id="highscore_button" data-balloon="High Scores"href="https://stb-gaming.github.io/high-scores/" class="btn big trans" >🏆</a>
 			<a  data-balloon="Controls" id="controls_button" href="javascript:createSettings()" class="btn big trans" >🎮</a>
@@ -127,6 +127,7 @@ function redirectToHelp() {
 		</div>
 	</div>
 	<script src="../mobile.js" onerror="redirectToHelp()"></script>
+	<script src="../toolbar.js" onerror="redirectToHelp()"></script>
 	<script src="../mouse-binder.js" onerror="redirectToHelp()"></script>
 	<script src="../binder.js" onerror="redirectToHelp()"></script>
 	<script src="../fullscreen.js" onerror="redirectToHelp()"></script>

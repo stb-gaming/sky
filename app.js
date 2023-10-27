@@ -144,20 +144,29 @@ Leave blank if you are finished.`);
 
 }
 
+let stbToolsSummoned = false;
+
 function SummonSTBTools() {
-	if(window.mouseBinder)
-	window.mouseBinder.posEditor.helperButtons()
+	if(stbToolsSummoned) return
+	stbToolsSummoned = true;
+	const gameContainers = document.getElementsByClassName("emscripten_border");
+	if(!gameContainers || !gameContainers.length) throw new Error("No Game Containers were found");
+	const gameContainer = gameContainers[0];
+	if(!gameContainer) throw new Error("No Game Container was found")
 
-	const toolbar = document.getElementsByClassName("toolbar")[0]
+	const topToolbar = new Toolbar(gameContainer),
+	leftToolbar = new Toolbar(gameContainer);
+	//rightToolbar = new Toolbar(gameContainer);
+	topToolbar.classList.add("top")
+	leftToolbar.classList.add("left")
+	//rightToolbar.classList.add("right")
+	if(window.mouseBinder){
+		window.mouseBinder.posEditor.helperButtonsMenus(topToolbar);
+		window.mouseBinder.posEditor.helperButtonsPos(leftToolbar);
+	}
+	topToolbar.addButton({label:"Change Sky Remote",emoji:"📺",action:createSkyRemoteChanges})
 
-	const editBtn = document.createElement("a")
-			toolbar.prepend(editBtn)
-			editBtn.href="#"
-			editBtn.classList.add("btn","big","trans")
-			editBtn.innerText = "📺"
-			editBtn.dataset.balloon = "Change SkyRemote"
-			editBtn.onclick = ()=>createSkyRemoteChanges()
-	alert("Game Setup Mode Activated 🥳")
+	setTimeout(()=>alert("Game Setup Mode Activated 🥳"),0)
 }
 
 async function loadSWF(...args) {

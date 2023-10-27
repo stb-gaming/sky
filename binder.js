@@ -496,13 +496,13 @@ function initSettings() {
 		buttonElement.id = `setting_${button.toLowerCase()}_bind`
 		buttonElement.textContent = "Bind";
 		buttonElement.onclick = async () => {
-			// Prompt bind pupup
+			// Prompt bind popup
 			await bindInput(getSelectedDevice(), button.toLowerCase());
 			///close the popup
 			deletePopup();
 			// save the new binds to browser storage
 			localStorage.setItem("stb_bindings", JSON.stringify(bindings));
-			// set the textbox text
+			// set the text box text
 			inputElement.value = bindings[button][getSelectedDevice()].action
 		}
 
@@ -527,84 +527,20 @@ function createSettings() {
 
 	// Create the heading
 	const heading = document.createElement("h1");
+	settingsPanel.appendChild(heading);
 	heading.textContent = "Settings";
 
 	//Create Toolbar
-	const toolbar = document.createElement("div");
+	const toolbar = new Toolbar(settingsPanel)
 	toolbar.classList.add("settings-toolbar")
-
-
-	//Tools Button
-	const toolsButton = document.createElement("button");
-	toolsButton.textContent = "🧰";
-	toolsButton.classList.add("big", "trans")
-	toolsButton.dataset.balloon = "Toolbox"
-	toolsButton.onclick = () => {
-		SummonSTBTools();
-	}
-
-	//Midi Button
-	const midiButton = document.createElement("button");
-	midiButton.textContent = "🎹";
-	midiButton.classList.add("big", "trans")
-	midiButton.dataset.balloon = "Enable MIDI"
-	midiButton.onclick = () => {
-		setupMidi();
-	}
-
-	// Create the refresh button
-	const refreshButton = document.createElement("button");
-	refreshButton.textContent = "🔄";
-	refreshButton.classList.add("big", "trans")
-	refreshButton.dataset.balloon = "Refresh"
-	refreshButton.onclick = () => {
+	toolbar.addButton({label:"Tools",emoji:"🧰",action:SummonSTBTools})
+	toolbar.addButton({label:"Enable MIDI",emoji:"🎹",action:setupMidi})
+	toolbar.addButton({label:"Refresh",emoji:"🔄",action:() => {
 		updateDeviceDropdown()
 		updateBindSettings();
-	};
+	}})
+	toolbar.addButton({label:"Close",emoji:"❌",action:()=>settingsPanel.remove()})
 
-	//Close Button
-	const closeButton = document.createElement("button");
-	closeButton.textContent = "❌";
-	closeButton.dataset.balloon = "Close"
-	closeButton.classList.add("big", "trans")
-	closeButton.onclick = () => {
-		settingsPanel.remove()
-	}
-
-	toolbar.appendChild(toolsButton);
-	toolbar.appendChild(midiButton);
-	toolbar.appendChild(refreshButton);
-	toolbar.appendChild(closeButton);
-
-	// Create the settings content div
-	const settingsContent = document.createElement("div");
-	settingsContent.classList.add("settings-content");
-
-	// Create the device selection div
-	const deviceDiv = document.createElement("div");
-
-	// Create the label for device
-	const deviceLabel = document.createElement("label");
-	deviceLabel.for = "setting-controller";
-	deviceLabel.textContent = "Device: ";
-
-	// Create the select element for device
-	const deviceSelect = document.createElement("select");
-	deviceSelect.name = "setting-controller";
-	deviceSelect.id = "settings-controller";
-
-
-	// Append everything for device to its div
-	deviceDiv.appendChild(deviceLabel);
-	deviceDiv.appendChild(deviceSelect);
-
-	// Create the device binds div
-	const deviceBindsDiv = document.createElement("div");
-	deviceBindsDiv.id = "device_binds";
-
-	// Append everything to the settings content div
-	settingsContent.appendChild(deviceDiv);
-	settingsContent.appendChild(deviceBindsDiv);
 
 	// Info Text
 	let info = document.createElement("p")
@@ -612,12 +548,36 @@ function createSettings() {
 	info.innerText = `Changes are saved to the browser automatically, one binding per device and all keyboards are treated as one.
 
 	If the device you're looking for isn't listed, please press a button on that device and it should be detected.`
+	settingsPanel.appendChild(info);
+
+	// Create the settings content div
+	const settingsContent = document.createElement("div");
+	settingsContent.classList.add("settings-content");
+
+	// Create the device selection div
+	const deviceDiv = document.createElement("div");
+	settingsContent.appendChild(deviceDiv);
+
+	// Create the label for device
+	const deviceLabel = document.createElement("label");
+	deviceLabel.for = "setting-controller";
+	deviceLabel.textContent = "Device: ";
+	deviceDiv.appendChild(deviceLabel);
+
+	// Create the select element for device
+	const deviceSelect = document.createElement("select");
+	deviceSelect.name = "setting-controller";
+	deviceSelect.id = "settings-controller";
+	deviceDiv.appendChild(deviceSelect);
+
+	// Create the device binds div
+	const deviceBindsDiv = document.createElement("div");
+	deviceBindsDiv.id = "device_binds";
+	settingsContent.appendChild(deviceBindsDiv);
+
 
 
 	// Append everything to the settings panel
-	settingsPanel.appendChild(heading);
-	settingsPanel.appendChild(toolbar);
-	settingsPanel.appendChild(info);
 	settingsPanel.appendChild(settingsContent);
 
 	document.body.appendChild(settingsPanel)

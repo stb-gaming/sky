@@ -38,42 +38,67 @@ class PositionEditor {
 
 	}
 
-	helperButtons() {
-		if(this.addedBtns) return
-		this.addedBtns = true;
-		const toolbar = document.getElementsByClassName("toolbar")[0]
-			const editBtn = document.createElement("a")
-			toolbar.prepend(editBtn)
-			editBtn.href="#"
-			editBtn.classList.add("btn","big","trans")
-			editBtn.innerText = "🏗️"
-			editBtn.dataset.balloon = "Edit Menu"
-			editBtn.onclick = ()=>this.toggle()
-
-			const menuBtn = document.createElement("a")
-			toolbar.prepend(menuBtn)
-			menuBtn.href="#"
-			menuBtn.classList.add("btn","big","trans")
-			menuBtn.innerText = "📜"
-			menuBtn.dataset.balloon = "Change Menu"
-			menuBtn.onclick = ()=>this.changeMenu()
-
-			const exportBtn = document.createElement("a")
-			toolbar.prepend(exportBtn)
-			exportBtn.href="#"
-			exportBtn.classList.add("btn","big","trans")
-			exportBtn.innerText = "📤"
-			exportBtn.dataset.balloon = "Export Menu"
-			exportBtn.onclick = ()=>prompt("Copy this", JSON.stringify(this.mouseBinder.positions))
-
-			const mouseBtn = document.createElement("a")
-			toolbar.prepend(mouseBtn)
-			mouseBtn.href="#"
-			mouseBtn.classList.add("btn","big","trans")
-			mouseBtn.innerText = "🐁"
-			mouseBtn.dataset.balloon = "Toggle Debug Mouse"
-			mouseBtn.onclick = ()=>this.mouseBinder.toggleDebug();
+	listMenus() {
+		let menus = Object.keys(this.mouseBinder.positions)
+		return "Menus include; "+menus.join(", ")+" or type something new to create a menu"
 	}
+
+	listRoles() {
+		let roles = ["button","slider","slider-vertical","slider-horizontal","dial"]
+		return "Roles include; "+roles.join(", ")+""
+	}
+
+	aboutTargets() {
+		return `
+A target can be;
+ * A sky remote button (help,backup, select etc)
+ * menu name to change to
+If you do 'select' then the player wont be able to switch between menu options.
+		`
+	}
+
+	setMode(mode) {
+		const oldMode = this.mode;
+		this.mode = this.mode==mode ? null:mode;
+
+		const oldModeElement = document.getElementById("editor-mode-"+oldMode),
+		modeElement = document.getElementById("editor-mode-"+mode);
+		if(oldModeElement)oldModeElement.classList.remove("active")
+		if(modeElement){
+			if(this.mode === mode) {
+				modeElement.classList.add("active")
+			} else {
+				modeElement.classList.remove("active")
+			}
+		}
+		this.bindCanvas.style.display = typeof mode !== "undefined"?null:"none"
+	}
+
+	helperButtonsMenus(toolbar) {
+		if(!toolbar) return
+		toolbar.addButton({label:"Toggle Regions",emoji:"👁️",action:()=>this.toggle()})
+		toolbar.addButton({label:"Save",emoji:"💾",action:()=>prompt("Copy this", JSON.stringify(this.mouseBinder.positions))})
+		toolbar.addButton({label:"Change Menu",emoji:"📜",action:()=>this.changeMenu()})
+		toolbar.addButton({label:"Toggle Debug Mouse",emoji:"🐁",action:()=>this.mouseBinder.toggleDebug()})
+		
+	}
+	helperButtonsPos(toolbar) {
+		if(!toolbar) return
+		const createButton = toolbar.addButton({label:"Create Region",emoji:"🆕",action:()=>this.setMode("create")})
+		const deleteButton = toolbar.addButton({label:"Delete Region",emoji:"🗑️",action:()=>this.setMode("delete")})
+		const renameButton = toolbar.addButton({label:"Set Target"+this.aboutTargets(),emoji:"🎯",action:()=>this.setMode("rename")})
+		const roleButton = toolbar.addButton({label:"Set Region Role",emoji:"🤹",action:()=>this.setMode("role")})
+		const setButton = toolbar.addButton({label:"Set Property",emoji:"🔧",action:()=>this.setMode("set")})
+		toolbar.addButton({label:"Set Custom Mode",emoji:"🧪",action:()=>this.setMode(prompt("Set Mode"))})
+
+		createButton.id = "editor-mode-create"
+		deleteButton.id = "editor-mode-delete"
+		renameButton.id = "editor-mode-rename"
+		setButton.id = "editor-mode-set"
+		roleButton.id = "editor-mode-role"
+
+	}
+
 
 	toggle() {
 		this.bindCanvas.style.display = this.bindCanvas.style.display ? null:"none"
@@ -81,7 +106,7 @@ class PositionEditor {
 	}
 
 	changeMenu(menu) {
-		const newMenu = menu|| prompt("Change Menu")
+		const newMenu = menu|| prompt("Change Menu, " + this.listMenus())
 		if(newMenu==this.mouseBinder.menu&&confirm("Delete Menu?")) {
 			delete this.mouseBinder.positions[menu];
 			this.bindCanvas.innerHTML = "";
@@ -114,11 +139,28 @@ class PositionEditor {
 	createBox(left,top,right,bottom,target) {
 		this.lastElement = document.createElement("span");
 		this.bindCanvas.appendChild(this.lastElement)
-		this.lastElement.style.position = "absolute"
-		this.lastElement.style.background = "green"
+		this.lastElement.dataset.role = "button"
 		this.lastElement.addEventListener("click",e=>{
-			if(confirm("Delete Box?")) {
-				this.deleteBox(e.target)
+			switch (this.mode) {
+				case "delete":
+						if(confirm("Delete Box?")) {
+							this.deleteBox(e.target)
+						}
+					break;
+				case "set":
+					e.target.dataset[prompt("Property to change")] = prompt("New value");
+					this.saveBox(e.target)
+					break;
+				case "rename":
+					e.target.dataset.target = prompt("Target Menu"+this.aboutTargets());
+					this.saveBox(e.target)
+					break;
+				case "role":
+					e.target.dataset.role = prompt("New Role, "+this.listRoles());
+					this.saveBox(e.target)
+					break;
+				default:
+					break;
 			}
 		})
 		this.setBox(left,top,right,bottom,target)
@@ -157,18 +199,20 @@ class PositionEditor {
 			)
 	}
 
-	saveBox() {
+	saveBox(element) {
+		if(element) this.lastElement = element;
 		const menu = this.mouseBinder.menu;
 		if(!this.mouseBinder.positions[menu])this.mouseBinder.positions[menu] ||{}
 		const positions = this.mouseBinder.positions[menu]
 		const dataset = this.lastElement.dataset
-		if(!dataset.target) dataset.target = prompt("Target Menu")
+		if(!dataset.target) dataset.target = prompt("Target Menu"+this.aboutTargets())
 		let box =  {
 			target:dataset.target,
 			left:Number(dataset.left),
 			right:Number(dataset.right),
 			top:Number(dataset.top),
-			bottom:Number(dataset.bottom)
+			bottom:Number(dataset.bottom),
+			role:dataset.role
 		}
 		positions[box.target] = box;
 	}
@@ -183,18 +227,18 @@ class PositionEditor {
 	mouseDown(clientX,clientY) {
 		this.mousedown = [clientX,clientY]
 		const pos = this.mouseBinder.windowToCanvas(clientX,clientY)
-		this.createBox(...pos)
+		if(this.mode==="create")this.createBox(...pos)
 	}
 	mouseUp(clientX,clientY){
 		this.mousedown = false
 		const pos = this.mouseBinder.windowToCanvas(clientX,clientY)
-		this.saveBox();
+		if(this.mode==="create")this.saveBox();
 
 	}
 	mouseMove(clientX,clientY) {
 		if(!this.mousedown) return
 		const pos = this.mouseBinder.windowToCanvas(clientX,clientY)
-		this.setBox(null,null,...pos)
+		if(this.mode==="create")this.setBox(null,null,...pos)
 	}
 
 	cleanup() {
@@ -408,7 +452,7 @@ class MouseBinder {
 			cx = (cb.left + cb.right) / 2,
 			cy = (cb.top + cb.bottom) / 2;
 
-		let rels = Object.values(items).map((eb, i) => {
+		let nearByPositions = Object.values(items).map((eb, i) => {
 			const
 				ex = (eb.left + eb.right) / 2,
 				ey = (eb.top + eb.bottom) / 2,
@@ -431,11 +475,11 @@ class MouseBinder {
 		});
 
 		// eslint-disable-next-line eqeqeq
-		rels = rels.filter(e => (e.i !== this.menuPos) && (!dx || e.ux > 0) && (!dy || e.uy > 0));
-		rels = rels.sort((a, b) => a.m - b.m).sort((a, b) => (dx ? a.mx - b.mx : dy ? a.my - b.my : a.m - b.m));
+		nearByPositions = nearByPositions.filter(e => (e.i !== this.menuPos) && (!dx || e.ux > 0) && (!dy || e.uy > 0));
+		nearByPositions = nearByPositions.sort((a, b) => a.m - b.m).sort((a, b) => (dx ? a.mx - b.mx : dy ? a.my - b.my : a.m - b.m));
 
-		if (!!rels.length) {
-			this.menuPos= rels[0].i;
+		if (!!nearByPositions.length) {
+			this.menuPos= nearByPositions[0].i;
 		}
 		this.updateMenuPos();
 	}

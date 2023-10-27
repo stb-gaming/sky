@@ -10,7 +10,11 @@
 			"reAttach": true,
 			"name": "Firefox",
 			"url": "http://localhost:8000/bb/app.html",
-			"webRoot": "${workspaceFolder}"
+			"webRoot": "${workspaceFolder}",
+			"clearConsoleOnReload": true,
+			"reloadOnChange": {
+				"watch": "${workspaceFileFolder}/**/*.js",
+			}
 		}
 	]
 }

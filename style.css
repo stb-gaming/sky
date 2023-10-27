@@ -44,7 +44,7 @@ body {
 	padding: 0;
 
 }
-.settings-toolbar {
+.settings-panel .toolbar {
 	grid-area: toolbar;
 	display: flex;
 	flex-flow: row;
@@ -117,6 +117,13 @@ canvas {
 	position: relative;
 	background-color: #06070c;
 	z-index: 1;
+
+	display: grid;
+	grid-template-areas: "top top top" "left game right" "bottom bottom bottom";
+}
+.emscripten_border>#canvas {
+
+	grid-area: game;
 }
 
 .toolbar {
@@ -124,12 +131,61 @@ canvas {
 	/* bottom: 0;
 	right:0; */
 	display: flex;
-	flex-flow: row;
-	justify-content: flex-end;
 	align-items: center;
 	background-color: rgba(128, 128, 128, 0.38);
 
 }
+
+.toolbar .active  {
+	outline: red solid 1px;
+}
+
+.toolbar.top,.toolbar.bottom {
+	height: min-content;
+
+}
+.toolbar.left,.toolbar.right {
+	flex-flow: column;
+	width: min-content;
+}
+.toolbar.top {
+	grid-area: top;
+}
+.toolbar.left {
+	grid-area: left;
+}
+.toolbar.right {
+	grid-area: right;  justify-self: right;
+}
+.toolbar.bottom {
+	justify-content: flex-end;
+	grid-area: bottom;
+}
+
+.toolbar.top [data-balloon]::before {
+	bottom:unset;
+	top: 100%;
+	margin-top: .5rem;
+}
+
+.toolbar.left [data-balloon]::before,.toolbar.right [data-balloon]::before {
+	translate:  0 -50%;
+	top:50%;
+	bottom:unset;
+}
+
+.toolbar.right [data-balloon]::before {
+	right: 100%;
+	left: unset;
+	margin-left: .5rem;
+}
+.toolbar.left [data-balloon]::before {
+	left: 100%;
+	right: unset;
+	margin-right: .5rem;
+}
+
+
 
 [data-fullscreen='true']  .toolbar {
 	position: absolute;
@@ -535,10 +591,52 @@ body>.emscripten {
 	color: black;
 }
 
+#bind-canvas {
+	grid-area: game;
+}
+
 #bind-canvas span {
-	opacity:  50%;
+	/* opacity:  70%; */
+	position: absolute;
+	color: black;
+	outline: white solid 1px;
+}
+#bind-canvas [data-role=button] {
+	background: rgba(128, 128, 128, 0.75);
+}
+#bind-canvas [data-role=slider] {
+	background: rgba(0, 128, 0, 0.75);
+}
+#bind-canvas [data-role=slider-hor] {
+	background: rgba(255, 255, 0, 0.75);
+}
+#bind-canvas [data-role=slider-vir] {
+	background: rgba(0, 0, 255, 0.75);
+}
+#bind-canvas [data-role=dial] {
+	background: rgba(255, 0, 0, 0.75);
+	border-radius: 50%;
+}
+#bind-canvas [data-role=button]::after {
+	color: grey;
+}
+#bind-canvas [data-role=slider]::after {
+	color: green;
+}
+#bind-canvas [data-role=slider-hor]::after {
+	color: yellow;
+}
+#bind-canvas [data-role=slider-vir]::after {
+	color: blue;
+}
+#bind-canvas [data-role=dial]::after {
+	color: red;
 }
 
 #bind-canvas [data-target]::before {
 	content: attr(data-target);
+}
+#bind-canvas [data-target]::after {
+	content: attr(data-role);
+	display: block;
 }
