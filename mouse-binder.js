@@ -125,8 +125,8 @@ If you do 'select' then the player wont be able to switch between menu options.
 			this.mouseBinder.positions[menu] = {}
 			return;
 		}else {
-			for (const {left,top,right,bottom,target} of Object.values(positions)) {
-				this.createBox(left,top,right,bottom,target)
+			for (const {left,top,right,bottom,target,role} of Object.values(positions)) {
+				this.createBox(left,top,right,bottom,target,role)
 				this.saveBox();
 			}
 		}
@@ -136,10 +136,9 @@ If you do 'select' then the player wont be able to switch between menu options.
 		return this.mouseBinder.bounds;
 	}
 
-	createBox(left,top,right,bottom,target) {
+	createBox(left,top,right,bottom,target,role) {
 		this.lastElement = document.createElement("span");
 		this.bindCanvas.appendChild(this.lastElement)
-		this.lastElement.dataset.role = "button"
 		this.lastElement.addEventListener("click",e=>{
 			switch (this.mode) {
 				case "delete":
@@ -163,9 +162,9 @@ If you do 'select' then the player wont be able to switch between menu options.
 					break;
 			}
 		})
-		this.setBox(left,top,right,bottom,target)
+		this.setBox(left,top,right,bottom,target,role)
 	}
-	setBox(left,top,right,bottom,target) {
+	setBox(left,top,right,bottom,target,role) {
 		const [winLeft,winTop] = this.mouseBinder.canvasToWindow(left,top),
 			[winRight,winBottom] = this.mouseBinder.canvasToWindow(right,bottom);
 		if(left){
@@ -186,6 +185,9 @@ If you do 'select' then the player wont be able to switch between menu options.
 		}
 		if(target) {
 			this.lastElement.dataset.target = target;
+		}
+		if(role) {
+			this.lastElement.dataset.role = role||"button"
 		}
 	}
 
@@ -256,13 +258,13 @@ class MouseBinder {
 		this.positions = positions
 		this.menu = Object.keys(positions)[0]||"main"
 		this.menuBreadcrumbs = []
-		this.menuPos = 0;
+		this.menuPos =  typeof this.menu.select === "undefined"?0:"select";
 		this.posEditor = new PositionEditor(this)
 		this.debugMouse = this.createDot()
 		this.lastMousePos = [];
 
 		//SkyRemote
-		if(positions&&!!Object.keys(positions[this.menu]).length) {
+		if(typeof positions === "object" && typeof positions[this.menu] == "object" &&!!Object.keys(positions[this.menu]).length) {
 			if(typeof SkyRemote === 'undefined') {
 				console.error("No SkyRemote was found");
 			} else {
@@ -270,8 +272,8 @@ class MouseBinder {
 				SkyRemote.onHoldButton("down", _=>this.down());
 				SkyRemote.onHoldButton("left", _=>this.left());
 				SkyRemote.onHoldButton("right", _=>this.right());
-				SkyRemote.onHoldButton("select", _=>this.selectDown());
-				SkyRemote.onReleaseButton("select", _=>this.selectUp());
+				SkyRemote.onHoldButton("select", _=>this.selectPress());
+				SkyRemote.onReleaseButton("select", _=>this.selectRelease());
 				SkyRemote.onHoldButton("backup", _=>this.backup());
 				SkyRemote.onHoldButton("help", _=>this.help());
 			}
@@ -484,30 +486,103 @@ class MouseBinder {
 		this.updateMenuPos();
 	}
 
+	slide(x,y) {
+
+		console.log("sliding");
+		const item = this.getItem();
+		x = Math.sign(x)
+		y = Math.sign(y)
+		if(typeof item.role === "string" &&item.role.startsWith("slider")) {
+			if(item.role.dial) return;
+			const width = item.right - item.left,
+			height = item.bottom - item.top;
+			let newX = this.lastMousePos[0], newY = this.lastMousePos[1];
+			const sliderSpeed = item.sliderSpeed || .01
+			newX += x*sliderSpeed
+			if(newX<item.left) newX = item.left
+			if(newX>item.right) newX = item.right
+			newY += y*sliderSpeed
+			if(newY<item.top) newY = item.top
+			if(newY>item.bottom) newY = item.bottom
+
+			if(item.role === "slider-vertical") {
+				newX = item.left + width/2
+			}
+			if(item.role === "slider-horizontal") {
+				newY = item.top + height/2
+			}
+
+			this.mouseMove(newX,newY)
+		}
+	}
+
 	left() {
-		console.log("hi");
-		this.traverse(-1,0)
+		const item = this.getItem();
+		switch (item.role) {
+			case "slider":
+			case "slider-horizontal":
+				this.slide(-1,0)				
+				break;
+		
+			default:
+				this.traverse(-1,0)
+				break;
+		}
+
 	}
 	right() {
-		this.traverse(1,0)
+		const item = this.getItem();
+		switch (item.role) {
+			case "slider":
+			case "slider-horizontal":
+				this.slide(1,0)				
+				break;
+		
+			default:
+				this.traverse(1,0)
+				break;
+		}
 	}
 	up() {
-		this.traverse(0,-1)
+		const item = this.getItem();
+		switch (item.role) {
+			case "slider":
+			case "slider-vertical":
+				this.slide(1,0)				
+				break;
+		
+			default:
+				this.traverse(0,-1)
+				break;
+		}
 	}
 	down() {
-		this.traverse(0,1);
+		const item = this.getItem();
+		switch (item.role) {
+			case "slider":
+			case "slider-vertical":
+				this.slide(1,0)				
+				break;
+		
+			default:
+				this.traverse(0,1)
+				break;
+		}
 	}
 	select() {
-		const item = this.getItem("select")||this.getItem()
-		this.clickItem(item.target)
+		//const item = this.getItem("select")||this.getItem()
+		//this.clickItem(item.target)
+		this.click()
 	}
-	selectDown() {
-		const item = this.getItem("select")||this.getItem()
-		this.holdItem(item.target)
+	selectPress() {
+		//const item = this.getItem("select")||this.getItem()
+		//this.holdItem(item.target)
+		this.mouseDown();
 	}
-	selectUp() {
-		const item = this.getItem("select")||this.getItem()
-		this.releaseItem(item.target)
+	selectRelease() {
+		//const item = this.getItem("select")||this.getItem()
+		//this.releaseItem(item.target)
+		this.mouseUp();
 	}
 	backup() {
 		if(this.getItem("pause")) {

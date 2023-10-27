@@ -607,10 +607,10 @@ body>.emscripten {
 #bind-canvas [data-role=slider] {
 	background: rgba(0, 128, 0, 0.75);
 }
-#bind-canvas [data-role=slider-hor] {
+#bind-canvas [data-role=slider-horizontal] {
 	background: rgba(255, 255, 0, 0.75);
 }
-#bind-canvas [data-role=slider-vir] {
+#bind-canvas [data-role=slider-vertical] {
 	background: rgba(0, 0, 255, 0.75);
 }
 #bind-canvas [data-role=dial] {
@@ -623,10 +623,10 @@ body>.emscripten {
 #bind-canvas [data-role=slider]::after {
 	color: green;
 }
-#bind-canvas [data-role=slider-hor]::after {
+#bind-canvas [data-role=slider-horizontal]::after {
 	color: yellow;
 }
-#bind-canvas [data-role=slider-vir]::after {
+#bind-canvas [data-role=slider-vertical]::after {
 	color: blue;
 }
 #bind-canvas [data-role=dial]::after {
@@ -638,5 +638,4 @@ body>.emscripten {
 }
 #bind-canvas [data-target]::after {
 	content: attr(data-role);
-	display: block;
 }
