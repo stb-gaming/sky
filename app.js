@@ -345,7 +345,7 @@ window.addEventListener("load", async () => {
 		}
 
 		const gameUrl = games[gameid] || urlParams.get("url") || "https://denki.co.uk" + pathname;
-
+		
 		try {
 			if (gameUrl.includes("denki.co.uk")) {
 				await loadDenkiGame(gameUrl)
@@ -363,6 +363,7 @@ window.addEventListener("load", async () => {
 
 		collectEvents();
 		connectToGame();
+		window.setWindowTitle(gameid)
 	} else {
 		console.error("no gameid");
 	}
