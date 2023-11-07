@@ -129,7 +129,7 @@ canvas {
 	grid-template-columns: 0 auto 0;
 	grid-template-rows: 0 auto 0;
 }
-.emscripten_border>#canvas {
+.emscripten_border>#canvas,.emscripten_border>#monogamecanvas {
 
 	grid-area: game;
 	border: 0px none;
