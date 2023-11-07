@@ -20,7 +20,19 @@ function redirectToHelp() {
 }
 </script>
 	<script src="https://unpkg.com/@ruffle-rs/ruffle"></script>	
+	<script src="../tra/bridge.min.js"></script>	
+	<script src="../tra/bridge.meta.min.js"></script>	
+	<script src="../tra/MonoGame.Framework.min.js"></script>	
+	<script src="../tra/MonoGame.Framework.meta.min.js"></script>	
 	<script src="../userscripts/sky-remote.user.js"></script>
+	<script src="../mobile.js" onerror="redirectToHelp()"></script>
+	<script src="../toolbar.js" onerror="redirectToHelp()"></script>
+	<script src="../mouse-binder.js" onerror="redirectToHelp()"></script>
+	<script src="../binder.js" onerror="redirectToHelp()"></script>
+	<script src="../fullscreen.js" onerror="redirectToHelp()"></script>
+	<script type="text/javascript" src="../app.js" onerror="redirectToHelp()"></script>
+
+	
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 </head>
@@ -43,16 +55,11 @@ function redirectToHelp() {
 			<a  data-balloon="Controls" id="controls_button" href="javascript:createSettings()" class="btn big trans" >🎮</a>
 			<a data-balloon="Help" id="help_button" href="javascript:SkyRemote.pressButton('help')" class="btn big trans" >❓</a>
 			<a id="denki_button" href="javascript:toDenki()" class="btn big trans" data-balloon="Back To Denki"><img src="../denki.png" alt="💡"></a>
-			<a data-balloon="Fullscreen" id="fullscreen_button" class="btn big trans" href="javascript:toggleFullscreen(document.querySelector('.emscripten_border'))">⛶</a>
+			<a data-balloon="Fullscreen" id="fullscreen_button" class="btn big trans" href="javascript:toggleFullscreen(document.querySelector('.emscripten_border')||document.querySelector('.monogame_border'))">⛶</a>
 		</div>
 	</div>
-	<script src="../mobile.js" onerror="redirectToHelp()"></script>
-	<script src="../toolbar.js" onerror="redirectToHelp()"></script>
-	<script src="../mouse-binder.js" onerror="redirectToHelp()"></script>
-	<script src="../binder.js" onerror="redirectToHelp()"></script>
-	<script src="../fullscreen.js" onerror="redirectToHelp()"></script>
 
-	<script type="text/javascript" src="../app.js" onerror="redirectToHelp()"></script>
+
 <!-- <p style="text-align:center;padding: 0px; margin: 0px;"><a href="javascript:createSettings()"><img src="../NewControls.png"></a><a href="https://stb-gaming.github.io/high-scores/"><img src="https://denki.co.uk/sky/HighScore.png"></a></p>
 	<p style="text-align:center;padding: 0px; margin: 0px;display: flex;
     justify-content: center;align-items: center;"><a

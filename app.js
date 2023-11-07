@@ -145,12 +145,23 @@ Leave blank if you are finished.`);
 
 }
 
+function appendToBody(element) {
+	if (document && document.body) {
+		document.body.appendChild(element)
+	} else {
+		window.addEventListener("load", () => {
+			appendToBody(element)
+		})
+	}
+}
+
 let stbToolsSummoned = false;
 
 function SummonSTBTools() {
 	if (stbToolsSummoned) return
 	stbToolsSummoned = true;
-	const gameContainers = document.getElementsByClassName("emscripten_border");
+	let gameContainers = document.getElementsByClassName("emscripten_border");
+	if(!gameContainers || !gameContainers.length) gameContainers = document.getElementsByClassName("monogame_border")
 	if (!gameContainers || !gameContainers.length) throw new Error("No Game Containers were found");
 	const gameContainer = gameContainers[0];
 	if (!gameContainer) throw new Error("No Game Container was found")
@@ -211,7 +222,7 @@ async function loadGame(scriptUrl) {
 	const scriptElement = document.createElement("script")
 	scriptElement.src = scriptUrl;
 
-	document.body.appendChild(scriptElement)
+	appendToBody(scriptElement)
 }
 
 function collectEvents() {
@@ -220,11 +231,14 @@ function collectEvents() {
 	window.addEventListenerOld = window.addEventListener
 	window.addEventListener = function (...args) {
 		const eventTypes = ["keydown", "keyup"];
+		console.debug("addEventListener", args)
 
 		if (eventTypes.includes(args[0]) && !gameEvents.hasOwnProperty(args[0])) {
 
 			console.debug(...args);
 			gameEvents[args[0]] = args[1];
+		} else if (args[0] === "load") {
+			args[1]();
 		} else {
 			this.addEventListenerOld(...args);
 		}
@@ -251,24 +265,24 @@ function wait(ms = 0) {
 	})
 }
 
-/**
- * 
- * @param {String} src 
- * @returns 
- */
-async function loadJS(src, text) {
+
+async function loadJS(src,text) {
 	const scriptElement = document.createElement("script");
 	if (src) {
-		if (src.startsWith("http") || src.startsWith(".")) {
-			if (text)
-				scriptElement.textContent = await getFileContents(src)
-			else
-				scriptElement.src = src
-		} else {
-			scriptElement.textContent = src;
-		}
+		if (text)
+			scriptElement.textContent = await getFileContents(src)
+		else
+			scriptElement.src = src
 	}
-	document.body.appendChild(scriptElement);
+	appendToBody(scriptElement)
+	return scriptElement
+}
+async function loadJSContent(content) {
+	const scriptElement = document.createElement("script");
+	if (content) {
+		scriptElement.textContent = src;
+	}
+	appendToBody(scriptElement)
 	return scriptElement
 }
 
@@ -356,7 +370,7 @@ async function loadDenkiGame(scriptUrl) {
 		appData = appJS.replace(".js", ".data"),
 		scriptContent = await getFileContents(appJS);
 
-	await loadJS(scriptContent.split("app.wasm").join(appWasm).split("app.data").join(appData))
+	await loadJSContent(scriptContent.split("app.wasm").join(appWasm).split("app.data").join(appData))
 }
 
 if (!window.setWindowTitle) {
@@ -365,7 +379,8 @@ if (!window.setWindowTitle) {
 	}
 }
 
-window.addEventListener("load", async () => {
+async function initPortal() {
+
 	let pathname = location.pathname, gameid;
 	if (!pathname.startsWith("/sky/")) pathname = "/sky" + location.pathname
 
@@ -380,6 +395,11 @@ window.addEventListener("load", async () => {
 		if (hsBtn) {
 			hsBtn.href = "https://stb-gaming.github.io/high-scores/games/" + gameid
 		}
+		setupTouchEvents();
+		addGamepadEvents();
+		addKeyboardEvents();
+
+		collectEvents();
 
 		const gameUrl = games[gameid] || urlParams.get("url") || "https://denki.co.uk" + pathname;
 
@@ -394,18 +414,16 @@ window.addEventListener("load", async () => {
 			console.error(error)
 			redirectToHelp();
 		}
-		setupTouchEvents();
-		addGamepadEvents();
-		addKeyboardEvents();
-
-		collectEvents();
 		connectToGame();
 		window.setWindowTitle(gameid)
 	} else {
 		console.error("no gameid");
 	}
-});
+}
 
+window.addEventListener("load", () => {
+	initPortal();
+});
 
 
 SkyRemote.onTriggerEvent((type, options, element) => {

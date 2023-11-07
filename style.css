@@ -31,7 +31,7 @@ body:after {
 	height: 100vh;
 }
 
-.bind-popup,.settings-panel, #status.emscripten:not(:empty) {
+.bind-popup,.settings-panel, #status.emscripten:not(:empty),#status.monogame:not(:empty) {
 	color:black;
 	background-color: hsla(0, 0%, 83%, 0.9);
 	border-radius: 10px;
@@ -117,10 +117,10 @@ canvas {
 }
 
 
-.emscripten_border {
+.emscripten_border,.monogame_border {
 	border-radius: .2rem;
 	position: relative;
-	background-color: #06070c;
+	background-color: black;
 	border: 1px solid black;
 	z-index: 1;
 
@@ -129,26 +129,26 @@ canvas {
 	grid-template-columns: 0 auto 0;
 	grid-template-rows: 0 auto 0;
 }
-.emscripten_border>#canvas,.emscripten_border>#monogamecanvas {
+.emscripten_border>#canvas,.monogame_border>#monogamecanvas {
 
 	grid-area: game;
 	border: 0px none;
 	background-color: black;
 }
 
-.emscripten {
+.emscripten,.monogame {
 	padding-right: 0;
 	margin-left: auto;
 	margin-right: auto;
 	display: block;
 }
 
-textarea.emscripten {
+textarea.emscripten,textarea.monogame {
 	font-family: monospace;
 	width: 80%;
 }
 
-div.emscripten {
+div.emscripten ,div.monogame {
 	text-align: center;
 }
 
@@ -292,7 +292,7 @@ div.emscripten {
 	right:0;
 }
 
-.emscripten_border a {
+.emscripten_border a,.monogameborder a {
 	-webkit-text-stroke: 1px black;
 }
 
@@ -565,7 +565,7 @@ div.emscripten {
 }
 
 @media screen and (orientation: landscape) and (max-height: 680px) {
-	.emscripten_border {
+	.emscripten_border,.monogame_border {
 		position: absolute;
 		left: 50%;
 		translate: -50%;
@@ -575,7 +575,7 @@ div.emscripten {
 
 
 
-	canvas.emscripten {
+	canvas.emscripten ,canvas.monogame {
 		height: calc(100vh - 1.3rem * 2);
 		margin-left: 0;
 		margin-right: 0;
@@ -600,14 +600,14 @@ div.emscripten {
 
 	@media (max-width: 440px) {
 
-		.emscripten_border {
+		.emscripten_border,.monogame_border {
 			height: calc(100vh - .5rem * 2);
 		}
 	}
 
 
 	@media (max-width: 845px) {
-		.emscripten_border {
+		.emscripten_border,.monogame_border {
 			width: calc(100vw - .5rem * 2);
 		}
 
@@ -621,7 +621,7 @@ div.emscripten {
 	display: none;
 }
 
-body>.emscripten {
+body>.emscripten,body>.monogame {
 	position: absolute;
 	top: 10%;
 	z-index: 2;
