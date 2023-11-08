@@ -280,7 +280,7 @@ async function loadJS(src,text) {
 async function loadJSContent(content) {
 	const scriptElement = document.createElement("script");
 	if (content) {
-		scriptElement.textContent = src;
+		scriptElement.textContent = content;
 	}
 	appendToBody(scriptElement)
 	return scriptElement
@@ -388,7 +388,8 @@ async function initPortal() {
 	const gameUrl = urlParams.get("url") || "https://denki.co.uk" + pathname;
 	result = /\/sky\/([a-zA-Z0-9-_]*)\/app\.html/.exec(pathname);
 
-	if (result && result.length > 1) gameid = result[1]
+	if (result && result.length > 1) gameid = result[1];
+	if(gameid==="ask") gameid=prompt("Enter GameID")
 
 	if (gameid) {
 		const hsBtn = document.getElementById("highscore_button")
@@ -401,7 +402,7 @@ async function initPortal() {
 
 		collectEvents();
 
-		const gameUrl = games[gameid] || urlParams.get("url") || "https://denki.co.uk" + pathname;
+		const gameUrl = games[gameid] || urlParams.get("url") || "https://denki.co.uk/sky/" +gameid + "/app.html";
 
 		try {
 			if (gameUrl.includes("denki.co.uk")) {

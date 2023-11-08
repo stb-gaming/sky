@@ -9,7 +9,7 @@
 			"request": "launch",
 			"reAttach": true,
 			"name": "Launch Testing Firefox",
-			"url": "http://localhost:8000/bb/app.html",
+			"url": "http://localhost:8000/ask/app.html",
 			"webRoot": "${workspaceFolder}",
 			"clearConsoleOnReload": true,
 			"reloadOnChange": {
