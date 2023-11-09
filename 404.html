@@ -8,31 +8,22 @@
 
 	<link rel="stylesheet" href="https://stb-gaming.github.io/high-scores/assets/css/hs.css">
 	<link rel="stylesheet" href="../style.css">
-	<style>
-		
 
-	</style>
+	<script>
 
-<script>
+	function redirectToHelp() {
+		if(!location.hostname.includes("localhost")) location.href = "https://github.com/stb-gaming/.github/wiki/portal"
+	}
+	</script>
 
-function redirectToHelp() {
-	if(!location.hostname.includes("localhost")) location.href = "https://github.com/stb-gaming/.github/wiki/portal"
-}
-</script>
-	<script src="https://unpkg.com/@ruffle-rs/ruffle"></script>	
-	<script src="../tra/bridge.min.js"></script>	
-	<script src="../tra/bridge.meta.min.js"></script>	
-	<script src="../tra/MonoGame.Framework.min.js"></script>	
-	<script src="../tra/MonoGame.Framework.meta.min.js"></script>	
+	<script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
 	<script src="../userscripts/sky-remote.user.js"></script>
-	<script src="../mobile.js" onerror="redirectToHelp()"></script>
-	<script src="../toolbar.js" onerror="redirectToHelp()"></script>
-	<script src="../mouse-binder.js" onerror="redirectToHelp()"></script>
-	<script src="../binder.js" onerror="redirectToHelp()"></script>
-	<script src="../fullscreen.js" onerror="redirectToHelp()"></script>
-	<script type="text/javascript" src="../app.js" onerror="redirectToHelp()"></script>
-
-	
+	<script src="../js/input/mobile.js" onerror="redirectToHelp()"></script>
+	<script src="../js/func/toolbar.js" onerror="redirectToHelp()"></script>
+	<script src="../js/func/mouse-binder.js" onerror="redirectToHelp()"></script>
+	<script src="../js/input/binder.js" onerror="redirectToHelp()"></script>
+	<script src="../js/func/fullscreen.js" onerror="redirectToHelp()"></script>
+	<script src="../js/func/app.js" onerror="redirectToHelp()"></script>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	

@@ -144,6 +144,15 @@ Leave blank if you are finished.`);
 	prompt("Here are your finished bindings, copy this into app.js:", JSON.stringify(bindings))
 
 }
+function appendToHead(element) {
+	if (document && document.head) {
+		document.head.appendChild(element)
+	} else {
+		window.addEventListener("load", () => {
+			appendToHead(element)
+		})
+	}
+}
 
 function appendToBody(element) {
 	if (document && document.body) {
@@ -266,8 +275,15 @@ function wait(ms = 0) {
 }
 
 
+async function runJS(src) {
+	const content = await getFileContents(src)
+
+	await (new Function(content)).call(globalThis);
+}
+
 async function loadJS(src,text) {
 	const scriptElement = document.createElement("script");
+	scriptElement.defer = true
 	if (src) {
 		if (text)
 			scriptElement.textContent = await getFileContents(src)
@@ -279,6 +295,7 @@ async function loadJS(src,text) {
 }
 async function loadJSContent(content) {
 	const scriptElement = document.createElement("script");
+	scriptElement.defer = true
 	if (content) {
 		scriptElement.textContent = content;
 	}
