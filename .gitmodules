@@ -4,3 +4,6 @@
 [submodule "tra"]
 	path = tra
 	url = https://github.com/stb-gaming/Tomb-Raider-Apocalypse-Remake-WebGL-.git
+[submodule "ppg"]
+	path = ppg
+	url = https://github.com/stb-gaming/PPGTV-WebGL.git
