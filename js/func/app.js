@@ -11,7 +11,7 @@ const urlParams = new URLSearchParams(location.search),
 		"pjd": "../pjd/app.js",
 		"tm": "../tm/app.js",
 		"wwk": "../wwk/app.js",
-		"tra": "../tra/app.js",
+		"tra": "static",
 	}, additionalOnTriggerEvents = [];
 let gameid;
 
@@ -170,7 +170,7 @@ function SummonSTBTools() {
 	if (stbToolsSummoned) return
 	stbToolsSummoned = true;
 	let gameContainers = document.getElementsByClassName("emscripten_border");
-	if(!gameContainers || !gameContainers.length) gameContainers = document.getElementsByClassName("monogame_border")
+	if (!gameContainers || !gameContainers.length) gameContainers = document.getElementsByClassName("monogame_border")
 	if (!gameContainers || !gameContainers.length) throw new Error("No Game Containers were found");
 	const gameContainer = gameContainers[0];
 	if (!gameContainer) throw new Error("No Game Container was found")
@@ -235,12 +235,11 @@ async function loadGame(scriptUrl) {
 }
 
 function collectEvents() {
-
-
-	window.addEventListenerOld = window.addEventListener
-	window.addEventListener = function (...args) {
+	EventTarget.prototype.addEventListenerOld = window.addEventListener
+	EventTarget.prototype.addEventListener = function (...args) {
 		const eventTypes = ["keydown", "keyup"];
-		console.debug("addEventListener", args)
+		console.debug(this, "addEventListener", args)
+		if(typeof args[1] === "function")console.debug(args[1].name)
 
 		if (eventTypes.includes(args[0]) && !gameEvents.hasOwnProperty(args[0])) {
 
@@ -281,7 +280,7 @@ async function runJS(src) {
 	await (new Function(content)).call(globalThis);
 }
 
-async function loadJS(src,text) {
+async function loadJS(src, text) {
 	const scriptElement = document.createElement("script");
 	scriptElement.defer = true
 	if (src) {
@@ -406,7 +405,7 @@ async function initPortal() {
 	result = /\/sky\/([a-zA-Z0-9-_]*)\/app\.html/.exec(pathname);
 
 	if (result && result.length > 1) gameid = result[1];
-	if(gameid==="ask") gameid=prompt("Enter GameID")
+	if (gameid === "ask") gameid = prompt("Enter GameID")
 
 	if (gameid) {
 		const hsBtn = document.getElementById("highscore_button")
@@ -417,21 +416,20 @@ async function initPortal() {
 		addGamepadEvents();
 		addKeyboardEvents();
 
-		collectEvents();
 
-		const gameUrl = games[gameid] || urlParams.get("url") || "https://denki.co.uk/sky/" +gameid + "/app.html";
-
-		try {
-			if (gameUrl.includes("denki.co.uk")) {
-				await loadDenkiGame(gameUrl)
-			} else {
-				document.getElementById("denki_button")?.remove();
-				await loadGame(gameUrl)
+		const gameUrl = games[gameid] || urlParams.get("url") || "https://denki.co.uk/sky/" + gameid + "/app.html";
+		if (gameUrl != "static")
+			try {
+				if (gameUrl.includes("denki.co.uk")) {
+					await loadDenkiGame(gameUrl)
+				} else {
+					document.getElementById("denki_button")?.remove();
+					await loadGame(gameUrl)
+				}
+			} catch (error) {
+				console.error(error)
+				redirectToHelp();
 			}
-		} catch (error) {
-			console.error(error)
-			redirectToHelp();
-		}
 		connectToGame();
 		window.setWindowTitle(gameid)
 	} else {
@@ -439,9 +437,8 @@ async function initPortal() {
 	}
 }
 
-window.addEventListener("load", () => {
-	initPortal();
-});
+collectEvents();
+initPortal();
 
 
 SkyRemote.onTriggerEvent((type, options, element) => {
