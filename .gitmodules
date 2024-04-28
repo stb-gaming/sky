@@ -1,12 +1,12 @@
 [submodule "userscripts"]
 	path = userscripts
 	url = https://github.com/stb-gaming/userscripts.git
-[submodule "tra"]
-	path = tra
-	url = https://github.com/stb-gaming/Tomb-Raider-Apocalypse-Remake-WebGL-.git
 [submodule "ppg"]
 	path = ppg
 	url = https://github.com/stb-gaming/PPGTV-WebGL.git
 [submodule "dlrr"]
 	path = dlrr
 	url = https://github.com/stb-gaming/DLRR-WebGL.git
+[submodule "tra"]
+	path = tra
+	url = https://github.com/stb-gaming/Tomb-Raider-Apocalypse-Remake-WebGL.git
