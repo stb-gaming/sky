@@ -7,3 +7,6 @@
 [submodule "ppg"]
 	path = ppg
 	url = https://github.com/stb-gaming/PPGTV-WebGL.git
+[submodule "dlrr"]
+	path = dlrr
+	url = https://github.com/stb-gaming/DLRR-WebGL.git
