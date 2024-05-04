@@ -437,8 +437,11 @@ async function initPortal() {
 	}
 }
 
-collectEvents();
-initPortal();
+document.addEventListener("load",()=>{
+	collectEvents();
+	initPortal();
+				
+})
 
 
 SkyRemote.onTriggerEvent((type, options, element) => {
