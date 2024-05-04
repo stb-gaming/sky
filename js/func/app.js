@@ -23,6 +23,12 @@ function toDenki() {
 	location.href = `https://denki.co.uk/sky/${gameid}/app.html`;
 }
 
+function waitDom() {
+	return new Promise((res,rej)=>{
+		document.addEventListener("DOMContentLoaded",res)
+	});
+}
+
 function replaceCanvas(element) {
 	const canvas = document.getElementById("canvas");
 	canvas.parentElement.replaceChild(element, canvas);
@@ -303,6 +309,7 @@ async function loadJSContent(content) {
 }
 
 async function loadDenkiGame(scriptUrl) {
+	await waitDom();
 	var statusElement = document.getElementById('status');
 	var progressElement = document.getElementById('progress');
 	var spinnerElement = document.getElementById('spinner');
@@ -333,7 +340,6 @@ async function loadDenkiGame(scriptUrl) {
 		},
 		canvas: (function () {
 			var canvas = document.getElementById('canvas');
-
 			// As a default initial behavior, pop up an alert when webgl context is lost. To make your
 			// application robust, you may want to override this behavior before shipping!
 			// See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
@@ -369,6 +375,7 @@ async function loadDenkiGame(scriptUrl) {
 			Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
 		}
 	};
+
 	Module.setStatus('Downloading...');
 	window.Module = Module
 	window.onerror = function () {
@@ -421,6 +428,7 @@ async function initPortal() {
 		if (gameUrl != "static")
 			try {
 				if (gameUrl.includes("denki.co.uk")) {
+					
 					await loadDenkiGame(gameUrl)
 				} else {
 					document.getElementById("denki_button")?.remove();
@@ -437,11 +445,8 @@ async function initPortal() {
 	}
 }
 
-document.addEventListener("load",()=>{
 	collectEvents();
 	initPortal();
-				
-})
 
 
 SkyRemote.onTriggerEvent((type, options, element) => {
