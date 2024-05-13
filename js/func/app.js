@@ -15,15 +15,8 @@ const urlParams = new URLSearchParams(location.search),
 	}, additionalOnTriggerEvents = [];
 let gameid;
 
-// @opentv.h https://discord.com/channels/1098329048079417404/1101465567539511347/1238571014758076426
-function advancedEncodeURIComponent(str) {
-	return Array.prototype.map.call(str, function(c) {
-	  return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-	}).join('');
-}
-
 function toCORS(url) {
-	return 'https://corsproxy.io/?' + advancedEncodeURIComponent(url);
+	return 'https://corsproxy.io/?' + encodeURIComponent(url);
 }
 
 function toDenki() {
