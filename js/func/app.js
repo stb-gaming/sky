@@ -12,6 +12,9 @@ const urlParams = new URLSearchParams(location.search),
 		"tm": "../tm/app.js",
 		"wwk": "../wwk/app.js",
 		"tra": "static",
+		"ppg": "static",
+		"dl": "static",
+		"sd": "static",
 	}, additionalOnTriggerEvents = [];
 let gameid;
 
