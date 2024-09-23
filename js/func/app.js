@@ -13,7 +13,7 @@ const urlParams = new URLSearchParams(location.search),
 		"wwk": "../wwk/app.js",
 		"tra": "static",
 		"ppg": "static",
-		"dl": "static",
+		"dlrr": "static",
 		"sd": "static",
 	}, additionalOnTriggerEvents = [];
 let gameid;
