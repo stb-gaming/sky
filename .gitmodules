@@ -10,6 +10,3 @@
 [submodule "userscripts"]
 	path = userscripts
 	url = https://github.com/stb-gaming/userscripts.git
-[submodule "sdff"]
-	path = sdff
-	url = https://github.com/stb-gaming/Scooby-Doo-in-Freaky-Fairground-Remake-WebGL.git
