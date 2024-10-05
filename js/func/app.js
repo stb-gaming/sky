@@ -14,7 +14,7 @@ const urlParams = new URLSearchParams(location.search),
 		"tra": "static",
 		"ppg": "static",
 		"dlrr": "static",
-		"sd": "static",
+		"sdff": "static",
 	}, additionalOnTriggerEvents = [];
 let gameid;
 
