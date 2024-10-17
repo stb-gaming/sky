@@ -27,8 +27,8 @@ function toDenki() {
 }
 
 function waitDom() {
-	return new Promise((res,rej)=>{
-		document.addEventListener("DOMContentLoaded",res)
+	return new Promise((res, rej) => {
+		document.addEventListener("DOMContentLoaded", res)
 	});
 }
 
@@ -248,11 +248,11 @@ function collectEvents() {
 	EventTarget.prototype.addEventListener = function (...args) {
 		const eventTypes = ["keydown", "keyup"];
 		console.debug(this, "addEventListener", args)
-		if(typeof args[1] === "function")console.debug(args[1].name)
+		if (typeof args[1] === "function") console.debug(args[1].name)
 
-		if (eventTypes.includes(args[0]) && !gameEvents.hasOwnProperty(args[0])) {
+		if (eventTypes.includes(args[0]) && !gameEvents.hasOwnProperty(args[0]) && args.length < 4) {
 
-			console.debug(...args);
+			console.debug("EVENT COLLECTED", ...args);
 			gameEvents[args[0]] = args[1];
 		} else if (args[0] === "load") {
 			args[1]();
@@ -425,13 +425,14 @@ async function initPortal() {
 		setupTouchEvents();
 		addGamepadEvents();
 		addKeyboardEvents();
+		//collectEvents();
 
 
 		const gameUrl = games[gameid] || urlParams.get("url") || "https://denki.co.uk/sky/" + gameid + "/app.html";
 		if (gameUrl != "static")
 			try {
 				if (gameUrl.includes("denki.co.uk")) {
-					
+
 					await loadDenkiGame(gameUrl)
 				} else {
 					document.getElementById("denki_button")?.remove();
@@ -448,8 +449,8 @@ async function initPortal() {
 	}
 }
 
-	collectEvents();
-	initPortal();
+collectEvents();
+initPortal();
 
 
 SkyRemote.onTriggerEvent((type, options, element) => {

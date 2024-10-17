@@ -3,15 +3,15 @@ class Toolbar {
 	 * 
 	 * @param {HTMLElement} parent 
 	 */
-	constructor(parent,insertFunction="appendChild") {
-		if(parent && parent.classList && parent.classList.contains("toolbar")) {
+	constructor(parent, insertFunction = "appendChild") {
+		if (parent && parent.classList && parent.classList.contains("toolbar")) {
 			this.element = parent
 			return;
 		}
 		const element = document.createElement("div");
 		element.classList.add("toolbar");
 
-		if(parent) parent[insertFunction](element)
+		if (parent) parent[insertFunction](element)
 		this.element = element;
 	}
 
@@ -29,24 +29,24 @@ class Toolbar {
 		this.element.prepend(...a)
 	}
 
-	addButton({label,emoji,img,action, insertFunction="append"}) {
-		const button = document.createElement(typeof action === "function"?"button":"a")
+	addButton({ label, emoji, img, action, insertFunction = "append" }) {
+		const button = document.createElement(typeof action === "function" ? "button" : "a")
 		this.element[insertFunction](button)
-		button.href="#"
-		if(emoji) button.innerText = emoji
-		if(label) button.dataset.balloon = label
-		if(typeof action === "function") {
+		button.href = "#"
+		if (emoji) button.innerText = emoji
+		if (label) button.dataset.balloon = label
+		if (typeof action === "function") {
 			button.onclick = action
 		} else {
 			button.classList.add("btn")
 			button.href = action
 		}
-		button.classList.add("big","trans")
-		if(img) {
+		button.classList.add("big", "trans")
+		if (img) {
 			const imgElement = new Image();
 			imgElement.src = img;
-			if(emoji) imgElement.alt = emoji
-			imgElement.onload = ()=>{
+			if (emoji) imgElement.alt = emoji
+			imgElement.onload = () => {
 				button.innerHTML = "";
 				button.appendChild(imgElement)
 			}

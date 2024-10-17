@@ -46,9 +46,9 @@ function createSkyRemoteContainer() {
 	// Create additional buttons
 	const additionalButtons = ["backup", "help", "log", "select"];
 	additionalButtons.forEach((label) => {
-		if(label=="log" && toolbar) {
+		if (label == "log" && toolbar) {
 			let logBtn = document.createElement("a")
-			logBtn.classList.add("btn","big","trans")
+			logBtn.classList.add("btn", "big", "trans")
 			logBtn.innerText = "🖥️"
 			logBtn.dataset.balloon = "Error Log"
 			logBtn.href = "javascript:toggleLog()"
@@ -84,7 +84,7 @@ function logLog(type, ...args) {
 	const stackTrace = error.stack.split("\n")[2].trim();
 
 	log[type](...args);
-	if(type=="debug") return
+	if (type == "debug") return
 	let logLine = document.createElement("span");
 	logLine.classList.add(type);
 	let logText = document.createElement("p");
@@ -150,7 +150,7 @@ function setupMobileControls() {
 			element: document.getElementById("sky-remote-blue")
 		}
 	].forEach(b => {
-		if(!b.element|| b.element== null) return
+		if (!b.element || b.element == null) return
 		createEvent(b.element, "touchstart", () => {
 			if (typeof colours[b.button] !== 'undefined' && colours[b.button].down) {
 				b.element.style.backgroundColor = colours[b.button].down;
@@ -171,15 +171,15 @@ function setupMobileControls() {
 		});
 	});
 	const logButton = document.getElementById("sky-remote-log");
-	if(logButton) {
-	let toggleLogBtn = () => {
-		logButton.style.backgroundColor = colours.log.up;
-		toggleLog();
-		
-	};
-	createEvent(logButton, "touchstart", () => { logButton.style.backgroundColor = colours.log.down; });
-	createEvent(logButton, "touchend", toggleLogBtn);
-}
+	if (logButton) {
+		let toggleLogBtn = () => {
+			logButton.style.backgroundColor = colours.log.up;
+			toggleLog();
+
+		};
+		createEvent(logButton, "touchstart", () => { logButton.style.backgroundColor = colours.log.down; });
+		createEvent(logButton, "touchend", toggleLogBtn);
+	}
 	toggleLog();
 
 	let dpad = document.getElementById("sky-remote-dpad");
@@ -263,9 +263,9 @@ function touchstart(e) {
 		document.getElementById("help_button")
 	]
 
-	if(remove.length) {
-		remove.forEach(r=>r.remove());
-		if(document.fullscreenElement) toggleFullscreen();
+	if (remove.length) {
+		remove.forEach(r => r.remove());
+		if (document.fullscreenElement) toggleFullscreen();
 	}
 
 	setupMobileControls();

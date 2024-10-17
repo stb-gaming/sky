@@ -104,11 +104,11 @@ function keyboardCollector(e) {
 }
 
 function addKeyboardEvents() {
-	["keyup", "keydown"].forEach(type => window.addEventListener(type, keyboardCollector));
+	["keyup", "keydown"].forEach(type => window.addEventListener(type, keyboardCollector, null, "sky"));
 }
 
 function removeKeyboardEvents() {
-	["keyup", "keydown"].forEach(type => window.removeEventListener(type, keyboardCollector));
+	["keyup", "keydown"].forEach(type => window.removeEventListener(type, keyboardCollector, null, "sky"));
 }
 
 
@@ -533,13 +533,15 @@ function createSettings() {
 	//Create Toolbar
 	const toolbar = new Toolbar(settingsPanel)
 	toolbar.classList.add("settings-toolbar")
-	toolbar.addButton({label:"Tools",emoji:"🧰",action:SummonSTBTools})
-	toolbar.addButton({label:"Enable MIDI",emoji:"🎹",action:setupMidi})
-	toolbar.addButton({label:"Refresh",emoji:"🔄",action:() => {
-		updateDeviceDropdown()
-		updateBindSettings();
-	}})
-	toolbar.addButton({label:"Close",emoji:"❌",action:()=>settingsPanel.remove()})
+	toolbar.addButton({ label: "Tools", emoji: "🧰", action: SummonSTBTools })
+	toolbar.addButton({ label: "Enable MIDI", emoji: "🎹", action: setupMidi })
+	toolbar.addButton({
+		label: "Refresh", emoji: "🔄", action: () => {
+			updateDeviceDropdown()
+			updateBindSettings();
+		}
+	})
+	toolbar.addButton({ label: "Close", emoji: "❌", action: () => settingsPanel.remove() })
 
 
 	// Info Text
