@@ -154,22 +154,22 @@ Leave blank if you are finished.`);
 
 }
 function appendToHead(element) {
-	if (document && document.head) {
-		document.head.appendChild(element)
+	if (document.head) {
+		document.head.appendChild(element);
 	} else {
-		window.addEventListener("load", () => {
-			appendToHead(element)
-		})
+		window.addEventListener("DOMContentLoaded", () => {
+			document.head.appendChild(element);
+		});
 	}
 }
 
 function appendToBody(element) {
-	if (document && document.body) {
-		document.body.appendChild(element)
+	if (document.body) {
+		document.body.appendChild(element);
 	} else {
-		window.addEventListener("load", () => {
-			appendToBody(element)
-		})
+		window.addEventListener("DOMContentLoaded", () => {
+			document.body.appendChild(element);
+		});
 	}
 }
 
