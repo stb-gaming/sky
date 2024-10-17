@@ -407,7 +407,7 @@ if (!window.setWindowTitle) {
 
 async function initPortal() {
 
-	let pathname = location.pathname, gameid;
+	let pathname = location.pathname;
 	if (!pathname.startsWith("/sky/")) pathname = "/sky" + location.pathname
 
 
