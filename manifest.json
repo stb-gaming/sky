@@ -5,27 +5,27 @@
 	"display":"standalone",
 	"icons": [
 		{
-		"src": "/icons/stb-white.png",
+		"src": "icons/stb-white.png",
 		"sizes": "599x599",
 		"type": "image/png"
 		},
 		{
-		"src": "/icons/stb-pink.png",
+		"src": "icons/stb-pink.png",
 		"sizes": "599x599",
 		"type": "image/png"
 		},
 		{
-		"src": "/icons/stb-512.png",
+		"src": "icons/stb-512.png",
 		"sizes": "512x512",
 		"type": "image/png"
 		},
 		{
-		"src": "/icons/stb-192.png",
+		"src": "icons/stb-192.png",
 		"sizes": "192x192",
 		"type": "image/png"
 		},
 		{
-		"src": "/icons/stb-144.png",
+		"src": "icons/stb-144.png",
 		"sizes": "144x144",
 		"type": "image/png"
 		}
