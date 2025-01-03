@@ -32,22 +32,10 @@
 	],
 	"screenshots": [
   {
-    "src": "screenshots/bindings.png",
-    "sizes": "1906x915",
-    "type": "image/webp",
-    "form_factor": "wide",
-    "label": "Bindings screen"
-  },
-  {
-    "src": "screenshots/gameplay.png",
-    "sizes": "1906x915",
-    "type": "image/webp",
-    "label": "Bindings screen"
-  },
-  {
     "src": "screenshots/new-device.png",
     "sizes": "1906x915",
     "type": "image/webp",
+    "form_factor": "wide",
     "label": "Bindings screen"
   },
   {
