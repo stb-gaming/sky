@@ -3,7 +3,7 @@
 	url = https://github.com/stb-gaming/PPGTV-WebGL.git
 [submodule "dlrr"]
 	path = dlrr
-	url = https://github.com/stb-gaming/DLRR-WebGL.git
+	url = https://github.com/stb-gaming/Dexters-Laboratory-Robot-Rampage-Remake-WebGL.git
 [submodule "tra"]
 	path = tra
 	url = https://github.com/stb-gaming/Tomb-Raider-Apocalypse-Remake-WebGL.git
