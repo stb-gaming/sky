@@ -250,7 +250,7 @@ function collectEvents() {
 		console.debug(this, "addEventListener", args)
 		if (typeof args[1] === "function") console.debug(args[1].name)
 
-		if (eventTypes.includes(args[0]) && !gameEvents.hasOwnProperty(args[0]) && args.length < 4) {
+		if (eventTypes.includes(args[0]) && !gameEvents.hasOwnProperty(args[0]) && args.length < 4 && args[3] !== "STBEVT") {
 
 			console.debug("EVENT COLLECTED", ...args);
 			gameEvents[args[0]] = args[1];
@@ -415,7 +415,7 @@ async function initPortal() {
 	result = /\/sky\/([a-zA-Z0-9-_]*)\/app\.html/.exec(pathname);
 
 	if (result && result.length > 1) gameid = result[1];
-	if (gameid === "ask") gameid = prompt("Enter GameID")
+	if (!gameid) gameid = prompt("Enter GameID")
 
 	if (gameid) {
 		const hsBtn = document.getElementById("highscore_button")
