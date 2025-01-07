@@ -462,3 +462,4 @@ SkyRemote.onTriggerEvent((type, options, element) => {
 	//Keep actvating SkyRemote.on####### events
 	SkyRemote.constructor.triggerEvent(type, options, element)
 });
+
