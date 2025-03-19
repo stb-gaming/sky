@@ -19,7 +19,7 @@ const urlParams = new URLSearchParams(location.search),
 let gameid;
 
 function toCORS(url) {
-	return 'https://corsproxy.io/' + encodeURIComponent(url);
+	return 'https://corsproxy.io/?url=' + encodeURIComponent(url);
 }
 
 function toDenki() {
