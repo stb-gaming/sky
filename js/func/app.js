@@ -19,6 +19,14 @@ const games = {
 const additionalOnTriggerEvents = [];
 let gameid;
 
+let statusElement = document.getElementById("status");
+let progressElement = document.getElementById("progress");
+let spinnerElement = document.getElementById("spinner");
+
+const helpLink = document.createElement("a");
+helpLink.href = "https://github.com/stb-gaming/.github/wiki/portal";
+helpLink.innerText = "How to use portal";
+
 function toCORS(url) {
 	return `https://proxy.corsfix.com/?${encodeURIComponent(url)}`;
 }
@@ -287,7 +295,7 @@ function unCollectEvents() {
 
 async function getFileContents(src) {
 	const response = await fetch(src);
-	if (!response.ok) return redirectToHelp();
+	if (!response.ok) return redirectToHelp(response.error);
 
 	const content = await response.text();
 	return content;
@@ -325,11 +333,39 @@ async function loadJSContent(content) {
 	return scriptElement;
 }
 
+function statusPrompt(ptext) {
+	let text = ptext;
+	if (!statusPrompt.last) statusPrompt.last = { time: Date.now(), text: "" };
+	if (text === statusPrompt.last.text) return;
+	const m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+	const now = Date.now();
+	if (m && now - statusPrompt.last.time < 30) return; // if this is a progress update, skip it if too soon
+	statusPrompt.last.time = now;
+	statusPrompt.last.text = text;
+	if (m) {
+		text = m[1];
+		progressElement.value = Number.parseInt(m[2]) * 100;
+		progressElement.max = Number.parseInt(m[4]) * 100;
+		progressElement.hidden = false;
+		spinnerElement.hidden = false;
+	} else {
+		progressElement.value = null;
+		progressElement.max = null;
+		progressElement.hidden = true;
+		if (!text) spinnerElement.hidden = true;
+	}
+	if (text) {
+		statusElement.innerHTML = `${text}<br>`;
+		statusElement.appendChild(helpLink);
+	} else {
+		statusElement.innerHTML = "";
+	}
+}
+
 async function loadDenkiGame(scriptUrl) {
+	progressElement = document.getElementById("progress");
+	spinnerElement = document.getElementById("spinner");
 	await waitDom();
-	const statusElement = document.getElementById("status");
-	const progressElement = document.getElementById("progress");
-	const spinnerElement = document.getElementById("spinner");
 
 	const Module = {
 		preRun: [],
@@ -373,30 +409,7 @@ async function loadDenkiGame(scriptUrl) {
 
 			return canvas;
 		})(),
-		setStatus: (ptext) => {
-			let text = ptext;
-			if (!Module.setStatus.last)
-				Module.setStatus.last = { time: Date.now(), text: "" };
-			if (text === Module.setStatus.last.text) return;
-			const m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-			const now = Date.now();
-			if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
-			Module.setStatus.last.time = now;
-			Module.setStatus.last.text = text;
-			if (m) {
-				text = m[1];
-				progressElement.value = Number.parseInt(m[2]) * 100;
-				progressElement.max = Number.parseInt(m[4]) * 100;
-				progressElement.hidden = false;
-				spinnerElement.hidden = false;
-			} else {
-				progressElement.value = null;
-				progressElement.max = null;
-				progressElement.hidden = true;
-				if (!text) spinnerElement.hidden = true;
-			}
-			statusElement.innerHTML = text;
-		},
+		setStatus: statusPrompt,
 		totalDependencies: 0,
 		monitorRunDependencies: function (left) {
 			this.totalDependencies = Math.max(this.totalDependencies, left);
@@ -482,7 +495,7 @@ async function initPortal() {
 				}
 			} catch (error) {
 				console.error(error);
-				redirectToHelp();
+				redirectToHelp(error);
 			}
 		connectToGame();
 		window.setWindowTitle(gameid);

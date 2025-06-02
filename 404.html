@@ -12,8 +12,15 @@
 
 	<script>
 
-	function redirectToHelp() {
-		if(!location.hostname.includes("localhost")) location.href = "https://github.com/stb-gaming/.github/wiki/portal"
+
+	function redirectToHelp(error) {
+		//if(!location.hostname.includes("localhost")) location.href = "https://github.com/stb-gaming/.github/wiki/portal"
+		if(statusPrompt) {
+			statusPrompt(error)
+		}
+		else {
+			prompt("There was an error loading game")
+		}
 	}
 	</script>
 
@@ -25,7 +32,6 @@
 	<script src="../js/input/binder.js" onerror="redirectToHelp()"></script>
 	<script src="../js/func/fullscreen.js" onerror="redirectToHelp()"></script>
 	<script src="../js/func/offline.js"></script>
-	<script src="../js/func/app.js" onerror="redirectToHelp()"></script>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	
@@ -60,6 +66,7 @@
 			href="javascript:toDenki()"><img
 				src="../Games.png"></a><a href="https://discord.gg/qSB8nYDfBt"><img
 				src="https://denki.co.uk/sky/Discord.png"></a></p> -->
+	<script src="../js/func/app.js" onerror="redirectToHelp()"></script>
 </body>
 
 </html>
