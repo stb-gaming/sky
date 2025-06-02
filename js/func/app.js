@@ -16,6 +16,8 @@ const games = {
 	dlrr: "static",
 	sdff: "static",
 };
+
+let STB_CORS_PROXY = "https://proxy.corsfix.com/?";
 const additionalOnTriggerEvents = [];
 let gameid;
 
@@ -28,7 +30,7 @@ helpLink.href = "https://github.com/stb-gaming/.github/wiki/portal";
 helpLink.innerText = "How to use portal";
 
 function toCORS(url) {
-	return `https://proxy.corsfix.com/?${encodeURIComponent(url)}`;
+	return `${STB_CORS_PROXY}${encodeURIComponent(url)}`;
 }
 
 function toDenki() {
