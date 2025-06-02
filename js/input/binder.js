@@ -550,6 +550,7 @@ function initSettings() {
 function changeProxy() {
 	STB_CORS_PROXY =
 		prompt("Change CORS Proxy", STB_CORS_PROXY) || STB_CORS_PROXY;
+	localStorage.setItem("stb_proxy", STB_CORS_PROXY);
 }
 
 function createSettings() {
