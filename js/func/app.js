@@ -19,8 +19,8 @@ const games = {
 const additionalOnTriggerEvents = [];
 let gameid;
 
-function toCORS(url, type = "raw") {
-	return `https://api.allorigins.win/${type}?url=${encodeURIComponent(url)}`;
+function toCORS(url) {
+	return `https://proxy.corsfix.com/?${encodeURIComponent(url)}`;
 }
 
 function toDenki() {
@@ -285,13 +285,6 @@ function unCollectEvents() {
 	window.addEventListener = window.addEventListenerOld;
 }
 
-async function getContentsFromAllOriginsCors(src) {
-	const response = await fetch(src);
-	if (!response.ok) return redirectToHelp();
-	const responseJson = await response.json();
-	return responseJson.contents;
-}
-
 async function getFileContents(src) {
 	const response = await fetch(src);
 	if (!response.ok) return redirectToHelp();
@@ -431,6 +424,14 @@ async function loadDenkiGame(scriptUrl) {
 	const appWasm = appJS.replace(".js", ".wasm");
 	const appData = appJS.replace(".js", ".data");
 	const scriptContent = await getFileContents(appJS);
+	console.log({
+		scriptUrl,
+		scriptUrlCors,
+		appJS,
+		appWasm,
+		appData,
+		scriptContent,
+	});
 
 	await loadJSContent(
 		scriptContent
