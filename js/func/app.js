@@ -18,7 +18,7 @@ const games = {
 };
 
 let STB_CORS_PROXY =
-	localStorage.getItem("stb_proxy") || "https://proxy.corsfix.com/?";
+	localStorage.getItem("stb_proxy") || "https://api.cors.lol/?url=";
 const additionalOnTriggerEvents = [];
 let gameid;
 
