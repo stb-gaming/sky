@@ -13,3 +13,6 @@
 [submodule "sdff"]
 	path = sdff
 	url = https://github.com/stb-gaming/Scooby-Doo-in-Freaky-Fairground-Remake-WebGL.git
+[submodule "carnage"]
+	path = carnage
+	url = https://github.com/stb-gaming/Cartoon-Carnage-Remake-WebGL.git
