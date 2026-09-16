@@ -18,7 +18,7 @@ const games = {
 };
 
 let STB_CORS_PROXY =
-	localStorage.getItem("stb_proxy") || "https://proxy.cors.sh/";
+	localStorage.getItem("stb_proxy") || "https://my-cors-proxy.zenth.workers.dev/?url=";
 const additionalOnTriggerEvents = [];
 let gameid;
 
